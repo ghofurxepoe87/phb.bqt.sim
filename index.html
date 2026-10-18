@@ -9,8 +9,7 @@
     <title>Platinum Hotel - Banquet Simulator App</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Supabase Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase dihapus, kita menggunakan fetch ke Google Apps Script -->
 
     <style>
         :root {
@@ -53,7 +52,7 @@
             background: var(--white); padding: 10px; border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
         }
-        .logo-box img { max-height: 50px; width: auto;} /* Menampilkan Logo GitHub */
+        .logo-box img { max-height: 50px; width: auto;} 
         
         .header-title h1 { font-size: 20px; margin-bottom: 4px; font-weight: 700; }
         .header-title p { font-size: 12px; font-weight: 500; opacity: 0.9; }
@@ -310,9 +309,23 @@
             @page { margin: 1cm; }
         }
 
+        /* Loading Spinner */
+        #loader {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.8); z-index: 2000; justify-content: center; align-items: center;
+        }
+        .spinner {
+            border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-blue);
+            border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
     </style>
 </head>
 <body>
+
+    <!-- Loading Screen -->
+    <div id="loader"><div class="spinner"></div></div>
 
     <!-- Header / Top App Bar -->
     <div class="header">
@@ -454,7 +467,7 @@
             </div>
 
             <div class="desktop-actions" style="justify-content: center; margin-bottom:20px;">
-                <button class="btn-primary" style="width: 100%; max-width: 400px; padding:18px; font-size:16px;" onclick="simpanTransaksiToSupabase()">💾 Save Event Transaction</button>
+                <button class="btn-primary" style="width: 100%; max-width: 400px; padding:18px; font-size:16px;" onclick="simpanKeGoogleSheets()">💾 Save Event Transaction</button>
             </div>
         </div>
 
@@ -589,7 +602,6 @@
                 <div class="desktop-actions">
                     <button class="btn-red" onclick="resetMenus()">⟲ Reset Selection</button>
                     <button class="btn-light-blue" onclick="cetakStandard()">🖨 Print View</button>
-                    <!-- Tombol ini nanti mengarah ke Dashboard untuk save gabungan -->
                     <button class="btn-primary" onclick="alert('Please go to Dashboard Event to save the transaction.')">💾 Save This Scenario</button>
                 </div>
             </div>
@@ -599,7 +611,7 @@
         <div class="mobile-bottom-bar">
             <button class="btn-mobile-secondary" onclick="openReportModal()">📑 Reports</button>
             <button class="btn-mobile-secondary" onclick="cetakSuratTamu()">PDF to Guest</button>
-            <button class="btn-mobile-primary" onclick="simpanTransaksiToSupabase()">💾 Save Event</button>
+            <button class="btn-mobile-primary" onclick="simpanKeGoogleSheets()">💾 Save Event</button>
         </div>
 
         <!-- Surat Tamu Container (Hidden by default, shown only on print) -->
@@ -674,11 +686,11 @@
                             <th>Status</th>
                             <th>Sales</th>
                             <th>Venue</th>
-                            <th>Pax</th>
-                            <th>Revenue</th>
-                            <th>Cost</th>
+                            <th>Total Pax</th>
+                            <th>Total Revenue</th>
+                            <th>Total Cost</th>
                             <th>Cost %</th>
-                            <th>Profit</th>
+                            <th>Total Profit</th>
                         </tr>
                     </thead>
                     <tbody id="report-table-body">
@@ -696,17 +708,10 @@
 
 <script>
     // ==========================================
-    // 1. SUPABASE CONFIGURATION (GANTI INI!)
+    // 1. GOOGLE APPS SCRIPT URL (GANTI INI!)
     // ==========================================
-    const SUPABASE_URL = 'MASUKKAN_URL_SUPABASE_ANDA_DISINI';
-    const SUPABASE_ANON_KEY = 'MASUKKAN_API_KEY_ANON_ANDA_DISINI';
+    const GOOGLE_APP_SCRIPT_URL = 'MASUKKAN_URL_GOOGLE_APPS_SCRIPT_ANDA_DISINI';
     
-    // Inisialisasi Supabase (hanya akan aktif jika URL & Key diisi)
-    let supabase = null;
-    if(SUPABASE_URL !== 'MASUKKAN_URL_SUPABASE_ANDA_DISINI') {
-        supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-
     // --- DATABASE MENU ---
     const menuDB = {
         buffet: {
@@ -1148,11 +1153,10 @@
         countTotalSelected();
     }
 
-    // --- INTEGRASI SUPABASE ---
-    async function simpanTransaksiToSupabase() {
+    // --- INTEGRASI GOOGLE SHEETS API ---
+    function simpanKeGoogleSheets() {
         const evName = document.getElementById('ev-name').value || 'Unnamed Event';
         const evBooker = document.getElementById('ev-booker').value || '-';
-        const evAddress = document.getElementById('ev-address').value || '-';
         const evWa = document.getElementById('ev-wa').value || '-';
         const evBeo = document.getElementById('ev-beo').value || '-';
         const evSegment = document.getElementById('ev-segment').value || '-';
@@ -1180,8 +1184,26 @@
         });
 
         let eventCostPct = eventRevenue > 0 ? (eventCost / eventRevenue) * 100 : 0;
+        let formattedCostPct = eventCostPct.toFixed(1) + '%';
 
-        const newData = {
+        const formData = new FormData();
+        formData.append('Event Date', dateStr);
+        formData.append('Event Name', evName);
+        formData.append('Booker', evBooker);
+        formData.append('WhatsApp', evWa);
+        formData.append('BEO', evBeo);
+        formData.append('Segment', evSegment);
+        formData.append('Status', evStatus);
+        formData.append('Sales Person', evSales);
+        formData.append('Venue', evVenue);
+        formData.append('Total Pax', eventPax);
+        formData.append('Total Revenue', eventRevenue);
+        formData.append('Total Cost', eventCost);
+        formData.append('Cost %', formattedCostPct);
+        formData.append('Total Profit', eventProfit);
+
+        // Backup ke memory local untuk Report Modal
+        transactionHistory.push({
             event_date: dateStr,
             name: evName,
             booker: evBooker,
@@ -1196,41 +1218,35 @@
             cost: eventCost,
             cost_pct: eventCostPct,
             profit: eventProfit
-        };
+        });
 
-        // Jika Supabase sudah dikonfigurasi, simpan ke Cloud
-        if (supabase) {
-            document.body.style.cursor = 'wait'; // Loading UI
-            const { data, error } = await supabase.from('transactions').insert([newData]);
-            document.body.style.cursor = 'default';
-
-            if (error) {
-                alert('Error saving to Supabase: ' + error.message);
-            } else {
-                alert(`Event Data "${evName}" successfully saved to Supabase Cloud Database!`);
-                transactionHistory.push(newData); // Also save to local memory for current session
-            }
+        if (GOOGLE_APP_SCRIPT_URL !== 'MASUKKAN_URL_GOOGLE_APPS_SCRIPT_ANDA_DISINI') {
+            document.getElementById('loader').style.display = 'flex';
+            
+            fetch(GOOGLE_APP_SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loader').style.display = 'none';
+                if (data.result === 'success') {
+                    alert(`Event Data "${evName}" successfully saved to Google Sheets!`);
+                } else {
+                    alert('Error saving to Google Sheets. Data saved locally.');
+                }
+            })
+            .catch(error => {
+                document.getElementById('loader').style.display = 'none';
+                alert('Connection error. Data saved locally for this session.');
+            });
         } else {
-            // Jika Supabase belum dikonfigurasi, simpan di memori lokal (untuk demo/testing)
-            transactionHistory.push(newData);
-            alert(`[Local Mode] Event Data "${evName}" saved successfully! (Supabase is not configured yet).`);
+            alert(`[Local Mode] Event Data "${evName}" saved to browser memory! (Google Sheets URL not configured).`);
         }
     }
 
-    // --- FETCH DATA DARI SUPABASE SAAT BUKA REPORT ---
-    async function fetchReportsFromSupabase() {
-        if(supabase) {
-            const { data, error } = await supabase.from('transactions').select('*').order('created_at', { ascending: false });
-            if(data && !error) {
-                transactionHistory = data; // Timpa local memory dengan data dari cloud
-            }
-        }
-    }
-
-    async function openReportModal() {
+    function openReportModal() {
         document.getElementById('reportModal').style.display = 'flex';
-        // Ambil data terbaru dari cloud sebelum merender tabel
-        if(supabase) await fetchReportsFromSupabase();
         renderReportTable();
     }
 
