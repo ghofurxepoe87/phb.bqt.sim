@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#023e8a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Platinum Hotel - Banquet Simulator App</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --primary-blue: #0077b6;
@@ -33,9 +39,14 @@
             background: linear-gradient(90deg, var(--dark-blue) 0%, var(--primary-blue) 50%, var(--secondary-blue) 100%);
             color: var(--white);
             padding: calc(20px + env(safe-area-inset-top)) 40px 20px 40px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
         }
         .header-left { display: flex; align-items: center; gap: 20px; }
         .logo-box {
@@ -50,7 +61,8 @@
         .header-actions { display: grid; grid-template-columns: repeat(3, auto); gap: 10px; }
         .btn-outline {
             background: transparent; border: 1px solid rgba(255,255,255,0.4); color: var(--white);
-            padding: 10px 18px; border-radius: 25px; font-size: 13px; cursor: pointer; transition: all 0.2s; font-weight: 600;
+            padding: 10px 18px; border-radius: 25px; font-size: 13px; cursor: pointer;
+            transition: all 0.2s; font-weight: 600;
         }
         .btn-outline:hover { background: rgba(255,255,255,0.15); border-color: var(--white); }
         .btn-solid-white {
@@ -87,6 +99,7 @@
 
         /* --- TOP LAYOUT & BLUE CARD --- */
         .top-grid { display: grid; grid-template-columns: 320px 1fr; gap: 25px; margin-bottom: 25px; align-items: start;}
+        
         .scenario-card {
             background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); 
             border-radius: 24px; color: var(--white); padding: 25px; position: relative; 
@@ -96,9 +109,9 @@
             position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.25);
             padding: 6px 14px; border-radius: 15px; font-size: 12px; font-weight: 800; backdrop-filter: blur(4px);
         }
-        .scenario-card h3 { font-size: 20px; margin-bottom: 25px; font-weight: 800; }
+        .scenario-card h3 { font-size: 20px; margin-bottom: 25px; font-weight: 800; letter-spacing: 0.5px;}
         .scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 12px; margin-bottom: 25px;}
-        .sc-val { font-size: 18px; font-weight: 800; margin-top: 5px; display: block; }
+        .sc-val { font-size: 18px; font-weight: 800; margin-top: 5px; display: block; letter-spacing: 0.5px;}
         .scenario-footer { display: flex; justify-content: space-between; align-items: center; font-size: 13px;}
         .btn-sc-action { background: rgba(255,255,255,0.25); border:none; color:white; padding: 10px 20px; border-radius: 20px; cursor:pointer; font-weight: 700; font-size: 12px;}
         
@@ -112,14 +125,14 @@
         .cp-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
         .cp-row input { font-size: 22px; font-weight: 800; color: var(--primary-blue);}
         .cp-row input:disabled { background: #e2e8f0; color: var(--text-muted); }
-        .input-hint { font-size: 11px; color: var(--text-muted); margin-top: 8px; display: block; font-weight: 500;}
+        .input-hint { font-size: 11px; color: var(--text-muted); margin-top: 8px; display: block; line-height: 1.4; font-weight: 500;}
 
         .summary-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
         .stat-capsule { background: #f8fafc; padding: 15px; border-radius: 16px; border: 1px solid var(--border-color);}
         .stat-capsule span { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; font-weight: 600;}
         .stat-capsule strong { display: block; font-size: 16px; color: var(--dark-blue); font-weight: 800;}
 
-        /* --- TABLE STYLE --- */
+        /* --- RESPONSIVE TABLE APP STYLE --- */
         .table-card { background: var(--white); border-radius: 20px; box-shadow: var(--card-shadow); padding: 20px; }
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; table-layout: fixed; min-width: 900px;}
@@ -141,9 +154,11 @@
             width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); 
             border-radius: 10px; font-size: 13px; color: var(--text-dark);
             background: #fff; cursor: pointer; font-weight: 600; appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231e293b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
         }
-        .menu-select:focus { border-color: var(--secondary-blue); box-shadow: 0 0 0 3px rgba(0,150,199,0.1); }
-        .menu-select:disabled { appearance: none; -webkit-appearance: none; background: transparent; color: #94a3b8; border-color: transparent; text-align: center;}
+        .menu-select:focus { border-color: var(--secondary-blue); box-shadow: 0 0 0 3px rgba(0,150,199,0.1); outline: none;}
+        .menu-select:disabled { background: #f1f5f9; color: #94a3b8; border-color: transparent; text-align: center; background-image: none;}
 
         .status-badge { padding: 8px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-align: center; display: block; width: 100%;}
         .badge-sesuai { background: #d1fae5; color: #047857; }
@@ -168,6 +183,33 @@
         .desktop-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px;}
         .mobile-bottom-bar { display: none; }
 
+        /* --- MODAL REPORT STYLES --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7); z-index: 1000; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px); padding: 15px;
+        }
+        .modal-content {
+            background: var(--bg-body); width: 100%; max-width: 1400px; max-height: 90vh;
+            border-radius: 24px; overflow-y: auto; box-shadow: var(--modal-shadow); padding: 30px;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .modal-header h2 { color: var(--dark-blue); font-size: 22px; font-weight: 800; }
+        
+        .report-summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px; }
+        .rs-box { background: #e0f2fe; padding: 20px; border-radius: 16px; }
+        .rs-box span { display: block; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px;}
+        .rs-box strong { display: block; font-size: 18px; color: var(--dark-blue); font-weight: 800;}
+        
+        .report-table-wrapper { background: var(--white); border-radius: 16px; overflow-x: auto; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .report-table { width: 100%; text-align: left; border-collapse: collapse; font-size: 13px; min-width: 1600px; }
+        .report-table th { background: #e2e8f0; padding: 16px; font-weight: 800; color: var(--dark-blue); }
+        .report-table td { padding: 16px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
+
+        /* =========================================
+           MOBILE APP RESPONSIVE STYLES
+           ========================================= */
         @media (max-width: 1024px) {
             .top-grid { grid-template-columns: 1fr; }
             .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: repeat(3, 1fr); }
@@ -181,6 +223,7 @@
             .container { padding: 0 15px; margin-top: 20px; }
             .form-grid-2, .form-grid-3, .cp-row { grid-template-columns: 1fr; gap: 15px; }
             .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: 1fr 1fr; }
+            .card { padding: 20px; border-radius: 16px; }
             
             .table-card { padding: 15px; background: transparent; box-shadow: none;}
             table, thead, tbody, th, td, tr { display: block; width: 100%; }
@@ -205,6 +248,11 @@
             .mobile-bottom-bar button { flex: 1; padding: 14px 10px; border-radius: 14px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; }
             .btn-mobile-primary { background: var(--primary-blue); color: white; }
             .btn-mobile-secondary { background: #e2e8f0; color: var(--dark-blue); }
+            
+            .modal-content { padding: 20px; border-radius: 16px;}
+            .modal-header h2 { font-size: 18px; }
+            .modal-actions { flex-direction: column; }
+            .modal-actions button { width: 100%; padding: 14px; font-size: 14px; }
         }
 
         @media (max-width: 480px) {
@@ -215,7 +263,7 @@
         #surat-tamu-container { display: none; }
         @media print {
             body { background: var(--white); color: #000; padding: 0; margin: 0; overflow: visible;}
-            .header, .header-actions, .mobile-bottom-bar, .desktop-actions, .scenario-tabs, .scenario-controls, .banner-container, .btn-sc-action, #dashboard-view {
+            .header, .header-actions, .mobile-bottom-bar, .desktop-actions, .scenario-tabs, .scenario-controls, .banner-container, .btn-sc-action, .modal-overlay, #dashboard-view {
                 display: none !important;
             }
             .container { max-width: 100%; margin: 0; padding: 0; box-shadow: none; }
@@ -244,13 +292,29 @@
             @page { margin: 1cm; }
         }
 
+        /* Loading Spinner */
+        #loader {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.8); z-index: 2000; justify-content: center; align-items: center;
+        }
+        .spinner {
+            border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-blue);
+            border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
     </style>
 </head>
 <body>
 
+    <!-- Loading Screen -->
+    <div id="loader"><div class="spinner"></div></div>
+
+    <!-- Header / Top App Bar -->
     <div class="header">
         <div class="header-left">
             <div class="logo-box">
+                <!-- LOGO GITHUB -->
                 <img src="logo.png" alt="Platinum Hotel Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 <span style="display:none;">PLATINUM</span>
             </div>
@@ -261,7 +325,7 @@
         </div>
         <div class="header-actions">
             <button class="btn-solid-white" onclick="tambahSkenario()">+ New Simulation</button>
-            <button class="btn-outline" onclick="cetakStandard()">🖨 Print View</button>
+            <button class="btn-outline" onclick="openReportModal()">📑 Reports</button>
             <button class="btn-outline" onclick="cetakSuratTamu()">PDF to Guest</button>
         </div>
     </div>
@@ -359,15 +423,15 @@
             
             <div class="db-table-wrapper" style="overflow-x:auto;">
                 <div class="card-title">Details per Scenario</div>
-                <table style="width:100%; border-collapse: collapse; text-align:left; font-size:14px;">
+                <table class="report-table" style="min-width: 600px;">
                     <thead>
-                        <tr style="border-bottom: 2px solid #e2e8f0; color:#64748b;">
-                            <th style="padding:15px;">Scenario</th>
-                            <th style="padding:15px;">Package</th>
-                            <th style="padding:15px;">Pax</th>
-                            <th style="padding:15px;">Price/Pax</th>
-                            <th style="padding:15px;">Revenue</th>
-                            <th style="padding:15px;">Profit</th>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Package</th>
+                            <th>Pax</th>
+                            <th>Price/Pax</th>
+                            <th>Revenue</th>
+                            <th>Profit</th>
                         </tr>
                     </thead>
                     <tbody id="db-table-body">
@@ -383,6 +447,10 @@
                 <div id="db-menu-engineering" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
                     <!-- Menu Engineering injected via JS -->
                 </div>
+            </div>
+
+            <div class="desktop-actions" style="justify-content: center; margin-bottom:20px;">
+                <button class="btn-primary" style="width: 100%; max-width: 400px; padding:18px; font-size:16px;" onclick="simpanTransaksiToSupabase()">💾 Save Event Transaction</button>
             </div>
         </div>
 
@@ -524,9 +592,9 @@
 
         <!-- Sticky Bottom Bar for MOBILE ONLY -->
         <div class="mobile-bottom-bar">
-            <button class="btn-mobile-secondary" onclick="cetakStandard()">🖨 Print</button>
+            <button class="btn-mobile-secondary" onclick="openReportModal()">📑 Reports</button>
             <button class="btn-mobile-secondary" onclick="cetakSuratTamu()">PDF to Guest</button>
-            <button class="btn-mobile-primary" onclick="alert('Open the HTML on PC to connect Google Sheets API')">💾 Save Event</button>
+            <button class="btn-mobile-primary" onclick="simpanTransaksiToSupabase()">💾 Save Event</button>
         </div>
 
         <!-- Surat Tamu Container (Hidden by default, shown only on print) -->
@@ -572,15 +640,76 @@
 
     </div>
 
+    <!-- MODAL REPORT -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Banquet Transaction Data Report</h2>
+                <button class="btn-outline" style="color:var(--dark-blue); border-color:var(--border-color); padding: 8px 15px;" onclick="closeReportModal()">✕ Close</button>
+            </div>
+
+            <div class="report-summary">
+                <div class="rs-box"><span>Total Event Transactions</span><strong id="rep-total-trx">0</strong></div>
+                <div class="rs-box"><span>Total Revenue</span><strong id="rep-total-rev">Rp 0</strong></div>
+                <div class="rs-box"><span>Total Cost</span><strong id="rep-total-cost">Rp 0</strong></div>
+                <div class="rs-box"><span>Cost %</span><strong id="rep-avg-cost">0%</strong></div>
+                <div class="rs-box"><span>Total Profit</span><strong id="rep-total-profit">Rp 0</strong></div>
+            </div>
+
+            <div class="report-table-wrapper">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Event Date</th>
+                            <th>Event Name</th>
+                            <th>Booker</th>
+                            <th>WhatsApp</th>
+                            <th>BEO</th>
+                            <th>Segment</th>
+                            <th>Status</th>
+                            <th>Sales</th>
+                            <th>Venue</th>
+                            <th>Total Pax</th>
+                            <th>Total Revenue</th>
+                            <th>Total Cost</th>
+                            <th>Cost %</th>
+                            <th>Total Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-table-body">
+                        <!-- Data injected via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-actions" style="margin-bottom: 20px;">
+                <button class="btn-light-blue" onclick="cetakStandard()">🖨 Print Report / PDF</button>
+                <button class="btn-primary" style="width:auto;" onclick="closeReportModal()">Close Report</button>
+            </div>
+        </div>
+    </div>
+
 <script>
-    // --- STATIC MENU DATABASE ---
+    // ==========================================
+    // 1. SUPABASE CONFIGURATION (GANTI INI!)
+    // ==========================================
+    const SUPABASE_URL = 'https://hupvhnvztvzqbdhuukpt.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1cHZobnZ6dHZ6cWJkaHV1a3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyNDY4NTIsImV4cCI6MjEwNTgyMjg1Mn0.E-XiAzngGIe_KAe2Znk201Jy55zwLUMOwL4cHhxQCPQ';
+    
+    // Inisialisasi Supabase
+    let supabase = null;
+    if(typeof supabaseClient !== 'undefined') {
+        supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    // --- DATABASE MENU ---
     const menuDB = {
         buffet: {
             "Appetizer": ["Asinan Bogor", "Asinan Jakarta", "Fatoush Salad", "Fisherman Salad", "Fruit Salad", "Fruits Salad", "Gado Gado", "Glass Noodles Salad", "Gohu Salad", "Greek Salad", "Green Garden Salad", "Grill Chicken Salad", "Grill Vegetables Seafood Salad", "Hawaian Chicken Salad", "Hawaiian Salad", "Japanese Potato Salad", "Karedok", "Ketoprak", "Lalapan Segar Sambal Terasi", "Lawar Bali", "Lotek Bandung", "Macaroni Mayonaise", "Mix Salad Bar", "Oriental Chicken Salad", "Pasta Beef Salad", "Pecal Sayuran", "Penne With Pesto", "Potato  Salad", "Rujak Buah Campur", "Rujak Juhi", "Rujak Pengantin", "Salad Bar", "Sausage Salad", "Seafood Cocktail", "Selada Empek-Empek", "Selada Pengantin", "Sosis Solo Sauce Kacang", "Sweet Corn And Smoked Beef", "Tahu Gejrot", "Tahu Gimbal", "Tahu Goreng Medan", "Tahu Lengko", "Tahu Telur", "Tomato And Cheese", "Urapan Sayuran"], 
             "Soup": ["Asparagus Crab Soup", "Asparagus Cream Soup", "Asparagus Dengan Ayam", "Asparagus Jagung", "Beef Brenebon Soup", "Beef Goulash Soup", "Broccoli Soup", "Chicken Cream Soup", "Corn & Chicken Soup", "Coto Makassar", "Cream Mushroom Soup", "Cream Pumpkin Soup", "Gazpacho Cold Soup", "Green Peas Cream Soup", "Ikan Tiucio", "Leek Potato Soup", "Minestrone Soup", "Miso Soup", "Mushroom Cream Soup", "Onion And Mushroom Soup", "Potato Cream Soup", "Pumpkin Cream Soup", "Seafood Bisque", "Seafood Bouillabiase Soup", "Seafood Chowder Soup", "Sop Ayam Sayur", "Sop Saudara", "Soto Ayam", "Soto Bandung", "Soto Betawi", "Soto Lamongan", "Soto Madura", "Soto Mie Bogor", "Soto Padang", "Soup Kimlo", "Soup Pallu Bassa", "Sup Asam Pedas", "Sup Ayam Herbal", "Sup Baso Pangsit", "Sup Bening Sosis Dan Baso", "Sup Jagung Ayam", "Sup Miso", "Sup Oyong Dan Jamur", "Sup Sosis Sayuran", "Sup Tahu Jamur", "Tofu & Seaweed Soup", "Tom Yam Ayam", "Tom Yam Seafood", "Tomato Cream Soup", "Tomato Soup", "Vegetarian Soup"], 
-            "Rice": ["Nasi Goreng Ayam", "Nasi Goreng Ikan Asin", "Nasi Goreng Kampung", "Nasi Goreng Kari", "Nasi Goreng Merah", "Nasi Goreng Oncom", "Nasi Goreng Sambal Hijau", "Nasi Goreng Sosis", "Nasi Goreng Vegetarian", "Nasi Goreng Yang Chow", "Nasi Kerabu", "Nasi Kuning", "Nasi Uduk", "Seafood Fried Rice", "Thai Pineapple Fried Rice", "Butter Rice", "Marinara Rice", "Mashed Potatto", "Paela Rice", "Potato Gratin", "Potato Lyonese", "Potato Wedges", "Roasted Potato"], 
+            "Rice": ["Nasi Goreng Ayam", "Nasi Goreng Ikan Asin", "Nasi Goreng Kampung", "Nasi Goreng Kari", "Nasi Goreng Merah", "Nasi Goreng Oncom", "Nasi Goreng Sambal Hijau", "Nasi Goreng Sosis", "Nasi Goreng Vegetarian", "Nasi Goreng Yang Chow", "Nasi Kerabu", "Nasi Kuning", "Nasi Uduk", "Seafood Fried Rice", "Thai Pineapple Fried Rice", "Butter Rice", "Marinara Rice", "Mashed Potatto", "Paela Rice", "Potato Gratin", "Potato Lyonese", "Potato Wedges", "Potato:", "Roasted Potato"], 
             "Side Dish": ["Bakwan Jagung", "Fuyung hai", "Jamur Goreng Crispy", "Kentang Balado", "Kentang Semur", "Orek Tempe Teri", "Sambal Goreng Hati", "Sosis Bakar", "Tahu Bacem", "Tahu Goreng Tepung", "Telur Balado", "Telur Semur", "Tempe Goreng Tepung", "Tofu salt pepper", "Tumis Sosis dan Baso"], 
-            "Noodle": ["Bie Hun Goreng", "Bie Hun Goreng Ayam", "Bie Hun Goreng Seafood", "Bihun Goreng Cabe Hijau", "Bihun Goreng Sosis", "Bihun Masak Kari", "I Fu Mie Vegetables", "Kwetiau Siram Sapi", "Kwie Tiaw Goreng Ayam", "Kwie Tiaw Goreng Sayuran", "Kwie Tiaw Goreng Seafood", "Malay Char Kwetiau", "Mie Goreng Ala Hongkong", "Mie Goreng Ayam", "Mie Goreng Ayam Sayuran", "Mie Goreng Daging", "Mie Goreng Jawa", "Mie Goreng Seafood", "Mie Goreng Singapore", "Mie Goreng Ulang Tahun", "Mie Titi Seafood", "Pad Thai Noodles", "Sohun Goreng Ayam", "Sohun Goreng Sayur", "Tami Special Ayam", "Tami Special Daging", "Tami Special Seafood", "Tang Hun Goreng", "Tang Hun Seafood", "Tofu & Seaweed Soup", "Tom Yam Ayam", "Tom Yam Seafood", "Vegetarian Fried Noodles", "Fettucine Mushroom", "Fettucine Napolitana", "Fetucini Agli Olio", "Fetucini Seafood", "Macaroni Carbonara", "Mixed Pasta", "Pasta Arrabiata", "Penne Aglio E Olio", "Penne Amatricina Sauce", "Penne De Pasto", "Penne Putanesca Sauce", "Spaghetti Aglio Olio", "Spaghetti Carbonara", "Spaghetti Marinara", "Spaghetty Arrabiatta Sauce", "Spaghetty Seafood  Marinanara", "Summer Spaghetty"], 
+            "Noodle": ["Bie Hun Goreng", "Bie Hun Goreng Ayam", "Bie Hun Goreng Seafood", "Bihun Goreng Ayam", "Bihun Goreng Cabe Hijau", "Bihun Goreng Sosis", "Bihun Masak Kari", "I Fu Mie Vegetables", "Kwetiau Siram Sapi", "Kwie Tiaw Goreng Ayam", "Kwie Tiaw Goreng Sayuran", "Kwie Tiaw Goreng Seafood", "Malay Char Kwetiau", "Mie Goreng Ala Hongkong", "Mie Goreng Ayam", "Mie Goreng Ayam Sayuran", "Mie Goreng Daging", "Mie Goreng Jawa", "Mie Goreng Seafood", "Mie Goreng Singapore", "Mie Goreng Ulang Tahun", "Mie Titi Seafood", "Pad Thai Noodles", "Sohun Goreng Ayam", "Sohun Goreng Sayur", "Tami Special Ayam", "Tami Special Daging", "Tami Special Seafood", "Tang Hun Goreng", "Tang Hun Seafood", "Tofu & Seaweed Soup", "Tom Yam Ayam", "Tom Yam Seafood", "Vegetarian Fried Noodles", "Fettucine Mushroom", "Fettucine Napolitana", "Fetucini Agli Olio", "Fetucini Seafood", "Macaroni Carbonara", "Mixed Pasta", "Pasta Arrabiata", "Penne Aglio E Olio", "Penne Amatricina Sauce", "Penne De Pasto", "Penne Putanesca Sauce", "Spaghetti Aglio Olio", "Spaghetti Carbonara", "Spaghetti Marinara", "Spaghetty Arrabiatta Sauce", "Spaghetty Seafood  Marinanara", "Summer Spaghetty"], 
             "Vegetable": ["Brokoli Bawang Putih", "Brokoli Dengan Ayam", "Brokoli Saos Tiram", "Buncis Bawang Putih", "Buncis Dengan Saos Tiram", "Cap Cay", "Cap Cay Sayuran", "Gudeg Khas Jogja", "Gulai Daun Singkong", "Gulai Nangka", "Kangkung Balacan", "Mapo Tofu", "Orak Arik Sayur Telor", "Orak Arik Sayuran", "Sapo Tofu Vegetables", "Sawi Daging Bawang Putih", "Sawi Daging Dengan Saos Tiram", "Sayur Acar Kuning", "Sayur Asem", "Sayur Lodeh", "String Bean Xo", "Terong Balado", "Tumis Aneka Jamur", "Tumis Buncis Dan Wortel", "Tumis Buncis Ebi", "Tumis Cuciwis", "Tumis Daun Pepaya & Teri", "Tumis Kacang Panjang Tempe Touge", "Tumis Kacang Panjang Teri", "Tumis Kailan Bawang Putih", "Tumis Labu Dan Wortel", "Tumis Pedas Labu Siam", "Tumis Pokcoy Dan Jamur", "Tumis Sawi Hijau & Putih", "Tumis Sayur  Campur", "Tumis Tauge Ikan Asin", "Carrot And Green Peas", "Cauly Flower Butered", "Frozen Mix Vegetable", "Garden Vegetabales", "Gratinated Aubergine And Zuccini", "Jardiniere  Vegetables", "Mix Grilled Vegetables", "Mix Vegetable Garlic", "Ratatouille Vegetables", "Vegetable Gratin", "Vegetable Napolitan", "Vichy Carrot", "Yellow Curry Vegtables"], 
             "Chicken": ["Ayam Asam Manis", "Ayam Bakar Kecap", "Ayam Bakar Madu", "Ayam Betutu (Goreng / Kuah)", "Ayam Bumbu Bali", "Ayam Bumbu Rujak", "Ayam Geprek", "Ayam Goreng Bawang Putih", "Ayam Goreng Dabu-Dabu", "Ayam Goreng Kalasan", "Ayam Goreng Kremes", "Ayam Goreng Lengkuas", "Ayam Goreng Mentega", "Ayam Goreng Singkawang", "Ayam Goreng Telur Asin", "Ayam Goreng Terasi", "Ayam Goreng Wijen", "Ayam Gulai", "Ayam Kalio", "Ayam Kari", "Ayam Lada Hitam", "Ayam Lodho", "Ayam Masak Balado", "Ayam Masak Cabai Hijau", "Ayam Masak Gulai", "Ayam Masak Hunan", "Ayam Masak Kungpao", "Ayam Masak Opor", "Ayam Masak Rendang", "Ayam Masak Rica-Rica", "Ayam Masak Semur", "Ayam Masak Szechuan", "Ayam Mentega", "Ayam Panggang Bumbu Rujak", "Ayam Panggang Jogja", "Ayam Panggang Kecap", "Ayam Panggang Padang", "Ayam Panggang Taliwang", "Ayam Renyah Saos Bangkok", "Ayam Rica Rica", "Ayam Saos Inggris", "Ayam Saos Teriyaki", "Ayam Topallada", "Bbq Roast Chciken", "Chicken Ala King", "Chicken Black Pepper Sauce", "Chicken Cacciotore", "Chicken Casserole", "Chicken Fricasse", "Chicken Katsu", "Chicken Lemon Butter Sauce", "Chicken Milanese", "Chicken Mushroom Sauce", "Chicken Piccatta Milanese", "Chicken Potato Curry", "Chicken Teriyaki", "Fried Chicken", "Grill Chicken Herbs Gravy", "Kungpao Chicken", "Opor Ayam", "Pepes Ayam Kemangi", "Roasted Chicken", "Roasted Chiken Bbq Sauce", "Roasted Chiken Mushroom Sauce", "Roasted Chiken Rosmary", "Strips Herbs Chicken", "Tongseng Ayam", "WESTERN"], 
             "Fish": ["Fish Lemon Butter", "Fish Lemon Butter Sauce", "Fish Mushroom Sauce", "Fish Orange Beurre Sauce", "Fish Pineapple Coriander Sauce", "Fish Tartar", "Fish Tomato Basil Sauce", "Fish Tomato Salsa", "Fried Fish Black Pepper", "Fried Fish Creamy Sauce", "Fried Fish Mayo Sauce", "Fried Fish Tartar", "Fried Fish Thai Sauce", "Grill Fish Capers And Butter", "Grill Fish Garlic Butter", "Ikan  Saos Lemon", "Ikan Acar Kuning", "Ikan Asam Manis", "Ikan Asem Pedas", "Ikan Asin Tarakan", "Ikan Bakar Colo-Colo", "Ikan Bakar Dabu-Dabu", "Ikan Bumbu Bali", "Ikan Bumbu Kari", "Ikan Bumbu Pesmol", "Ikan Bumbu Rujak", "Ikan Dabu Dabu", "Ikan Dori Relur Asin", "Ikan Goreng Ala Thai", "Ikan Goreng Balado", "Ikan Goreng Mentega", "Ikan Goreng Rica-Rica", "Ikan Goreng Sambal Asap", "Ikan Goreng Saos Malaysia", "Ikan Goreng Saos Mangga", "Ikan Goreng Sauce Acar Kuning", "Ikan Goreng Szechuan", "Ikan Gulai", "Ikan Lempah Kuning", "Ikan Masak Bumbu Pesmol", "Ikan Masak Habang", "Ikan Masak Kemangi", "Ikan Masak Szechuan", "Ikan Masak Tausi", "Ikan Panggang Padang", "Ikan Parappe", "Ikan Pepes Kemagi", "Ikan Rica-Rica", "Ikan Sambal Matah", "Ikan Saos Bangkok", "Ikan Saos Mentega", "Ikan Saos Plum", "Ikan Saos Taucho", "Ikan Sauce Teriyaki", "Ikan Saus Lemon Sauce", "Pepes Ikan", "Steam Fish", "Gulai Asam Pedas"], 
@@ -601,33 +730,33 @@
         }
     };
 
-    // --- RULES ---
-    const getBuffetRules = (alloc) => {
-        if(alloc >= 285000) return { tier: 'T1', round: 300000, qty: { Appetizer:1, Soup:1, Rice:1, 'Side Dish':1, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:1, Stall:2, 'Dessert 1':1, 'Dessert 2':1 } };
-        if(alloc >= 260000) return { tier: 'T2', round: 275000, qty: { Appetizer:1, Soup:1, Rice:1, 'Side Dish':0, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:1, Stall:1, 'Dessert 1':1, 'Dessert 2':1 } };
-        if(alloc >= 235000) return { tier: 'T3', round: 250000, qty: { Appetizer:0, Soup:1, Rice:1, 'Side Dish':0, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:1, Stall:1, 'Dessert 1':1, 'Dessert 2':1 } };
-        if(alloc >= 185000) return { tier: 'T4', round: 200000, qty: { Appetizer:1, Soup:1, Rice:1, 'Side Dish':0, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:0, Stall:0, 'Dessert 1':1, 'Dessert 2':0 } };
-        if(alloc >= 160000) return { tier: 'T5', round: 175000, qty: { Appetizer:0, Soup:1, Rice:1, 'Side Dish':1, Noodle:0, Vegetable:1, Chicken:1, Fish:1, Beef:0, Stall:0, 'Dessert 1':1, 'Dessert 2':0 } };
-        return { tier: 'T6', round: 150000, qty: { Appetizer:0, Soup:0, Rice:0, 'Side Dish':0, Noodle:0, Vegetable:0, Chicken:0, Fish:0, Beef:0, Stall:0, 'Dessert 1':0, 'Dessert 2':0 } };
-    };
+    // --- LOGIC RULES ---
+    function getBuffetRules(alloc) {
+        if(alloc >= 285000) return { tier: 'T1', round: 300000, min: 285000, max: 9999999, qty: { Appetizer:1, Soup:1, Rice:1, 'Side Dish':1, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:1, Stall:2, 'Dessert 1':1, 'Dessert 2':1 } };
+        if(alloc >= 260000) return { tier: 'T2', round: 275000, min: 260000, max: 284999, qty: { Appetizer:1, Soup:1, Rice:1, 'Side Dish':0, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:1, Stall:1, 'Dessert 1':1, 'Dessert 2':1 } };
+        if(alloc >= 235000) return { tier: 'T3', round: 250000, min: 235000, max: 259999, qty: { Appetizer:0, Soup:1, Rice:1, 'Side Dish':0, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:1, Stall:1, 'Dessert 1':1, 'Dessert 2':1 } };
+        if(alloc >= 185000) return { tier: 'T4', round: 200000, min: 185000, max: 234999, qty: { Appetizer:1, Soup:1, Rice:1, 'Side Dish':0, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:0, Stall:0, 'Dessert 1':1, 'Dessert 2':0 } };
+        if(alloc >= 160000) return { tier: 'T5', round: 175000, min: 160000, max: 184999, qty: { Appetizer:0, Soup:1, Rice:1, 'Side Dish':1, Noodle:0, Vegetable:1, Chicken:1, Fish:1, Beef:0, Stall:0, 'Dessert 1':1, 'Dessert 2':0 } };
+        return { tier: 'T6', round: 150000, min: 0, max: 159999, qty: { Appetizer:0, Soup:0, Rice:0, 'Side Dish':0, Noodle:0, Vegetable:0, Chicken:0, Fish:0, Beef:0, Stall:0, 'Dessert 1':0, 'Dessert 2':0 } };
+    }
 
-    const getCBRules = (alloc) => {
-        if(alloc >= 150000) return { tier: 'T1', round: 150000, qty: { SAVORY:3, SWEET:2, CHIIPS:1, STALL:1, JUICES:1, TEA:1, COFFEE:1, 'COFFEE CUP':1, 'OTHER HOT DRINK':1 } };
-        if(alloc >= 125000) return { tier: 'T2', round: 125000, qty: { SAVORY:2, SWEET:2, CHIIPS:1, STALL:1, JUICES:1, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
-        if(alloc >= 100000) return { tier: 'T3', round: 100000, qty: { SAVORY:2, SWEET:2, CHIIPS:1, STALL:1, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
-        if(alloc >= 75000) return { tier: 'T4', round: 75000, qty: { SAVORY:2, SWEET:1, CHIIPS:1, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
-        if(alloc >= 50000) return { tier: 'T5', round: 50000, qty: { SAVORY:1, SWEET:1, CHIIPS:1, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
-        return { tier: 'T6', round: 35000, qty: { SAVORY:0, SWEET:0, CHIIPS:0, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
-    };
+    function getCBRules(alloc) {
+        if(alloc >= 140000) return { tier: 'T1', round: 150000, min: 140000, max: 999999, qty: { SAVORY:3, SWEET:2, CHIIPS:1, STALL:1, JUICES:1, TEA:1, COFFEE:1, 'COFFEE CUP':1, 'OTHER HOT DRINK':1 } };
+        if(alloc >= 115000) return { tier: 'T2', round: 125000, min: 115000, max: 139999, qty: { SAVORY:2, SWEET:2, CHIIPS:1, STALL:1, JUICES:1, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        if(alloc >= 90000) return { tier: 'T3', round: 100000, min: 90000, max: 114999, qty: { SAVORY:2, SWEET:2, CHIIPS:1, STALL:1, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        if(alloc >= 65000) return { tier: 'T4', round: 75000, min: 65000, max: 89999, qty: { SAVORY:2, SWEET:1, CHIIPS:1, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        if(alloc >= 50000) return { tier: 'T5', round: 50000, min: 50000, max: 64999, qty: { SAVORY:1, SWEET:1, CHIIPS:0, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        return { tier: 'T6', round: 35000, min: 0, max: 49999, qty: { SAVORY:0, SWEET:0, CHIIPS:0, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+    }
 
-    const catsBuffet = [
+    const categoriesBuffet = [
         { id: 'Appetizer', cost: 5000 }, { id: 'Soup', cost: 6000 }, { id: 'Rice', cost: 3000 }, 
         { id: 'Side Dish', cost: 5000 }, { id: 'Noodle', cost: 6000 }, { id: 'Vegetable', cost: 5000 }, 
         { id: 'Chicken', cost: 7000 }, { id: 'Fish', cost: 9000 }, { id: 'Beef', cost: 13000 }, 
         { id: 'Stall', cost: 10000 }, { id: 'Dessert 1', cost: 5000 }, { id: 'Dessert 2', cost: 5000 }
     ];
 
-    const catsCB = [
+    const categoriesCB = [
         { id: 'SAVORY', cost: 5000 }, { id: 'SWEET', cost: 5000 }, { id: 'CHIIPS', cost: 3000 }, 
         { id: 'STALL', cost: 5000 }, { id: 'JUICES', cost: 5000 }, { id: 'TEA', cost: 3000 }, 
         { id: 'COFFEE', cost: 3000 }, { id: 'COFFEE CUP', cost: 8000 }, { id: 'OTHER HOT DRINK', cost: 5000 }
@@ -639,11 +768,18 @@
     ];
     let activeScenarioId = 1;
     let scenarioCounter = 1;
+    let transactionHistory = []; 
     let isDashboardView = false;
 
-    // Format Helpers
-    const formatRp = (num) => 'Rp ' + new Intl.NumberFormat('id-ID').format(num);
-    const parseNumber = (str) => parseInt(str.toString().replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
+    // --- PARSER & FORMATTER ---
+    function parseNumber(str) {
+        if (!str) return 0;
+        return parseInt(str.toString().replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
+    }
+
+    function formatRp(num) {
+        return 'Rp ' + new Intl.NumberFormat('id-ID').format(num);
+    }
 
     function formatInput(el) {
         let val = parseNumber(el.value);
@@ -651,7 +787,7 @@
         el.value = new Intl.NumberFormat('id-ID').format(val);
     }
 
-    // --- MAIN RENDERERS ---
+    // --- UI RENDERING ---
     function renderTabs() {
         const container = document.getElementById('scenario-tabs');
         if(!container) return;
@@ -714,78 +850,91 @@
     }
 
     function loadActiveScenario() {
-        const sc = scenarios.find(s => s.id === activeScenarioId);
-        if(!sc) return;
+        let active = null;
+        for (let i = 0; i < scenarios.length; i++) {
+            if (scenarios[i].id === activeScenarioId) {
+                active = scenarios[i];
+                break;
+            }
+        }
+        if(!active) return;
         
-        document.getElementById('sc-title-display').innerText = sc.name;
-        document.getElementById('cp-sc-title').innerText = sc.name;
-        document.getElementById('input-allocation').value = new Intl.NumberFormat('id-ID').format(sc.allocation);
-        document.getElementById('input-pax').value = new Intl.NumberFormat('id-ID').format(sc.pax);
+        document.getElementById('sc-title-display').innerText = active.name;
+        document.getElementById('cp-sc-title').innerText = active.name;
+        document.getElementById('input-allocation').value = new Intl.NumberFormat('id-ID').format(active.allocation);
+        document.getElementById('input-pax').value = new Intl.NumberFormat('id-ID').format(active.pax);
         
-        if (sc.mode === 'buffet') {
+        if (active.mode === 'buffet') {
             document.getElementById('pkg-buffet').checked = true;
-            document.getElementById('tier-hint').style.display = 'block';
         } else {
             document.getElementById('pkg-cb').checked = true;
-            document.getElementById('tier-hint').style.display = 'block'; 
         }
         
         updateSim();
     }
 
     function changePackageType() {
-        const sc = scenarios.find(s => s.id === activeScenarioId);
-        sc.mode = document.getElementById('pkg-buffet').checked ? 'buffet' : 'cb';
-        sc.allocation = (sc.mode === 'buffet') ? 200000 : 50000;
-        sc.selections = {}; 
-        document.getElementById('input-allocation').value = new Intl.NumberFormat('id-ID').format(sc.allocation);
+        let active = null;
+        for (let i = 0; i < scenarios.length; i++) {
+            if (scenarios[i].id === activeScenarioId) { active = scenarios[i]; break; }
+        }
+        
+        active.mode = document.getElementById('pkg-buffet').checked ? 'buffet' : 'cb';
+        active.allocation = (active.mode === 'buffet') ? 200000 : 50000;
+        active.selections = {}; 
+        
+        document.getElementById('input-allocation').value = new Intl.NumberFormat('id-ID').format(active.allocation);
         updateSim();
     }
 
     // --- ENGINE CORE ---
     function updateSim() {
-        const sc = scenarios.find(s => s.id === activeScenarioId);
-        if(!sc) return;
+        let active = null;
+        for (let i = 0; i < scenarios.length; i++) {
+            if (scenarios[i].id === activeScenarioId) { active = scenarios[i]; break; }
+        }
+        if(!active) return;
         
-        sc.allocation = parseNumber(document.getElementById('input-allocation').value);
-        sc.pax = parseNumber(document.getElementById('input-pax').value) || 1;
+        active.allocation = parseNumber(document.getElementById('input-allocation').value);
+        active.pax = parseNumber(document.getElementById('input-pax').value) || 1;
         
-        let rule = (sc.mode === 'buffet') ? getBuffetRules(sc.allocation) : getCBRules(sc.allocation);
-        let categories = (sc.mode === 'buffet') ? catsBuffet : catsCB;
+        let rule = (active.mode === 'buffet') ? getBuffetRules(active.allocation) : getCBRules(active.allocation);
+        let categories = (active.mode === 'buffet') ? categoriesBuffet : categoriesCB;
         
-        sc.sellingPrice = rule.round;
-        sc.currentTierLabel = rule.tier;
+        active.sellingPrice = rule.round;
+        active.currentTierLabel = rule.tier;
         
-        document.getElementById('input-selling').value = new Intl.NumberFormat('id-ID').format(sc.sellingPrice);
-        document.getElementById('tier-hint').innerText = `${rule.tier} → Selling Price Rp ${new Intl.NumberFormat('id-ID').format(rule.round)}`;
+        document.getElementById('input-selling').value = new Intl.NumberFormat('id-ID').format(active.sellingPrice);
+        let pkgLabel = (active.mode === 'buffet') ? 'T' : 'CB T';
+        document.getElementById('tier-hint').innerText = `${pkgLabel}${rule.tier.replace('T','')}: Rp ${new Intl.NumberFormat('id-ID').format(rule.min)} - Rp ${new Intl.NumberFormat('id-ID').format(rule.max)} → Selling Price Rp ${new Intl.NumberFormat('id-ID').format(rule.round)}`;
 
-        let totalCostPerPax = 0, totalQty = 0;
+        let totalCostPerPax = 0;
+        let totalQty = 0;
         let tbody = document.getElementById('table-body');
         tbody.innerHTML = '';
 
-        categories.forEach((cat, index) => {
+        for (let i = 0; i < categories.length; i++) {
+            let cat = categories[i];
             let qty = rule.qty[cat.id] || 0;
             let rowCost = cat.cost * qty;
             totalCostPerPax += rowCost;
             totalQty += qty;
             
-            // Generate HTML Row
             let tr = document.createElement('tr');
             tr.innerHTML = `
-                <td data-label="No">${index + 1}</td>
-                <td data-label="Category" style="font-weight:700; color:var(--primary-blue); font-size:15px;" class="cat-name">${cat.id}</td>
+                <td data-label="No">${i + 1}</td>
+                <td data-label="Category" style="font-weight:700; color:var(--primary-blue); font-size:15px;" class="cat-name" data-catid="${cat.id}">${cat.id}</td>
                 <td data-label="Cost/Item">${formatRp(cat.cost)}</td>
                 <td data-label="Qty" class="col-qty"><input type="number" value="${qty}" readonly></td>
                 <td data-label="Total/Pax" style="font-weight:700;">${qty === 0 ? 'Rp 0' : formatRp(rowCost)}</td>
-                <td data-label="Menu 1">${getSelectHTML(cat.id, 1, qty, sc.mode, sc)}</td>
-                <td data-label="Menu 2">${getSelectHTML(cat.id, 2, qty, sc.mode, sc)}</td>
-                <td data-label="Menu 3">${getSelectHTML(cat.id, 3, qty, sc.mode, sc)}</td>
+                <td data-label="Menu 1">${getSelectHTML(cat.id, 1, qty, active.mode, active)}</td>
+                <td data-label="Menu 2">${getSelectHTML(cat.id, 2, qty, active.mode, active)}</td>
+                <td data-label="Menu 3">${getSelectHTML(cat.id, 3, qty, active.mode, active)}</td>
                 <td data-label="Status"><span class="status-badge ${qty === 0 ? 'badge-sesuai' : 'badge-lengkapi'}">${qty === 0 ? 'Complete' : 'Incomplete'}</span></td>
             `;
             tbody.appendChild(tr);
-        });
+        }
 
-        // Add Total Row
         let totalTr = document.createElement('tr');
         totalTr.style = "background:#f1f5f9; font-weight:700;";
         totalTr.innerHTML = `
@@ -796,57 +945,97 @@
         `;
         tbody.appendChild(totalTr);
 
-        // Update Summaries
-        sc.revenue = sc.sellingPrice * sc.pax;
-        sc.totalCost = totalCostPerPax * sc.pax;
-        sc.profit = sc.revenue - sc.totalCost;
-        sc.costPct = sc.revenue > 0 ? (sc.totalCost / sc.revenue) * 100 : 0;
+        active.revenue = active.sellingPrice * active.pax;
+        active.totalCost = totalCostPerPax * active.pax;
+        active.profit = active.revenue - active.totalCost;
+        active.costPct = active.revenue > 0 ? (active.totalCost / active.revenue) * 100 : 0;
 
-        updateSummaryCards(sc, totalCostPerPax, totalQty);
+        updateSummaryStats(active, active.sellingPrice, totalCostPerPax, totalQty);
         
-        // Initial badge check
-        document.querySelectorAll('#table-body select:not([disabled])').forEach(s => updateRowStatus(s, true));
+        let selects = document.querySelectorAll('#table-body select:not([disabled])');
+        for(let i = 0; i < selects.length; i++) {
+            updateRowStatus(selects[i], true);
+        }
         countTotalSelected();
     }
 
     function getSelectHTML(catId, cellIndex, qtyLimit, mode, activeScenario) {
-        if (cellIndex > qtyLimit) return `<select class="menu-select" disabled><option>—</option></select>`;
+        if (cellIndex > qtyLimit) {
+            return `<select class="menu-select" disabled><option>—</option></select>`;
+        }
         
         let dbCat = (catId === 'Dessert 1' || catId === 'Dessert 2') ? 'Dessert' : catId;
-        const optionsData = menuDB[mode][dbCat] || [];
+        let optionsData = menuDB[mode][dbCat] || [];
         
         let savedVal = "";
         if (activeScenario.selections && activeScenario.selections[catId]) {
             savedVal = activeScenario.selections[catId][cellIndex - 1] || "";
         }
 
-        let opts = `<option value="">— Select Menu —</option>`;
-        optionsData.forEach(o => {
-            opts += `<option value="${o}" ${o === savedVal ? "selected" : ""}>${o}</option>`;
-        });
-        return `<select class="menu-select" onchange="updateRowStatus(this)">${opts}</select>`;
+        let optsHTML = `<option value="">— Select Menu —</option>`;
+        for(let i=0; i<optionsData.length; i++) {
+            let o = optionsData[i];
+            let isSelected = (o === savedVal) ? "selected" : "";
+            optsHTML += `<option value="${o}" ${isSelected}>${o}</option>`;
+        }
+        
+        return `<select class="menu-select" onchange="updateRowStatus(this)">${optsHTML}</select>`;
+    }
+
+    function saveSelections() {
+        let active = null;
+        for (let i = 0; i < scenarios.length; i++) {
+            if (scenarios[i].id === activeScenarioId) { active = scenarios[i]; break; }
+        }
+        if(!active) return;
+        if(!active.selections) active.selections = {};
+        
+        let rows = document.querySelectorAll('#table-body tr');
+        if(!rows) return;
+
+        for(let r=0; r<rows.length; r++) {
+            let tr = rows[r];
+            let catCell = tr.querySelector('.cat-name');
+            if(catCell) {
+                let catId = catCell.getAttribute('data-catid');
+                if(catId) {
+                    let selects = tr.querySelectorAll('select:not([disabled])');
+                    let vals = [];
+                    for(let s=0; s<selects.length; s++) {
+                        vals.push(selects[s].value);
+                    }
+                    active.selections[catId] = vals;
+                }
+            }
+        }
     }
 
     function updateRowStatus(selectEl, skipCounter = false) {
-        const tr = selectEl.closest('tr');
+        if(!skipCounter) saveSelections(); 
+
+        let tr = selectEl.closest('tr');
         if(!tr) return;
-
-        // Save State
-        const catName = tr.querySelector('.cat-name').innerText;
-        const sc = scenarios.find(s => s.id === activeScenarioId);
-        if(!sc.selections) sc.selections = {};
         
-        let vals = [];
-        tr.querySelectorAll('select:not([disabled])').forEach(s => vals.push(s.value));
-        sc.selections[catName] = vals;
-
-        // Check Status
-        const qty = parseInt(tr.querySelector('.col-qty input').value) || 0;
-        const badge = tr.querySelector('.status-badge');
+        let qtyInput = tr.querySelector('.col-qty input');
+        if(!qtyInput) return; 
         
-        if(qty === 0) return;
+        let qty = parseInt(qtyInput.value) || 0;
+        let badge = tr.querySelector('.status-badge');
+        if(!badge) return;
+        
+        if (qty === 0) {
+            badge.className = 'status-badge badge-sesuai'; badge.innerText = 'Complete';
+            return;
+        }
 
-        let filled = vals.filter(v => v !== "" && v !== "—").length;
+        let filled = 0;
+        let selects = tr.querySelectorAll('select:not([disabled])');
+        if(selects) {
+            for(let i=0; i<selects.length; i++) {
+                if(selects[i].value.trim() !== "" && selects[i].value !== "—") filled++; 
+            }
+        }
+        
         if (filled >= qty) {
             badge.className = 'status-badge badge-sesuai'; badge.innerText = 'Complete';
         } else {
@@ -857,58 +1046,77 @@
     }
 
     function countTotalSelected() {
-        let selected = 0;
-        document.querySelectorAll('#table-body select:not([disabled])').forEach(s => {
-            if(s.value.trim() !== "" && s.value !== "—") selected++;
-        });
+        let totalSelected = 0;
+        let gqEl = document.getElementById('grand-qty');
+        let totalQty = gqEl ? parseInt(gqEl.innerText) : 0;
         
-        let totalQty = parseInt(document.getElementById('grand-qty')?.innerText) || 0;
+        let rows = document.querySelectorAll('#table-body tr');
+        for(let r=0; r<rows.length; r++) {
+            let tr = rows[r];
+            let qtyInput = tr.querySelector('.col-qty input');
+            if (qtyInput) {
+                let qty = parseInt(qtyInput.value) || 0;
+                let filled = 0;
+                let selects = tr.querySelectorAll('select:not([disabled])');
+                for(let s=0; s<selects.length; s++) {
+                    if (selects[s].value.trim() !== "" && selects[s].value !== "—") filled++;
+                }
+                totalSelected += Math.min(filled, qty);
+            }
+        }
         
-        const counterEl = document.getElementById('menu-counter');
-        if(counterEl) counterEl.innerText = selected;
+        let counterEl = document.getElementById('menu-counter');
+        if(counterEl) counterEl.innerText = totalSelected;
         
-        const statusEl = document.getElementById('sc-menu-status');
-        if(statusEl) statusEl.innerText = `Menu ${selected}/${totalQty}`;
+        let statusEl = document.getElementById('sc-menu-status');
+        if(statusEl) statusEl.innerText = `Menu ${totalSelected}/${totalQty}`;
 
-        const banner = document.getElementById('menu-completion-banner');
+        let banner = document.getElementById('menu-completion-banner');
         if(banner) {
-            if(totalQty > 0 && selected >= totalQty) {
+            if(totalQty > 0 && totalSelected >= totalQty) {
                 banner.className = 'banner-container banner-success';
                 banner.innerHTML = 'MENU IS COMPLETE <small>All menu selections for this scenario meet the quota.</small>';
             } else {
                 banner.className = 'banner-container banner-warning';
-                banner.innerHTML = 'COMPLETE THE MENU <small>Category status is checked based on the number of Menu choices compared to Qty.</small>';
+                banner.innerHTML = 'COMPLETE THE MENU <small>Category status is checked based on the number of Menu choices compared to Qty. Category with Qty 0 does not need to be filled.</small>';
             }
         }
     }
 
-    function updateSummaryCards(sc, costPax, totalQty) {
-        let profitPax = sc.sellingPrice - costPax;
-        let pctProfit = sc.revenue > 0 ? (sc.profit / sc.revenue) * 100 : 0;
-        let dispTier = sc.mode === 'cb' ? 'CB ' + sc.currentTierLabel : sc.currentTierLabel;
+    function updateSummaryStats(active, sellingPrice, totalCostPerPax, totalQty) {
+        let profitPax = sellingPrice - totalCostPerPax;
+        let pctProfit = active.revenue > 0 ? (active.profit / active.revenue) * 100 : 0;
+        let dispTier = active.mode === 'cb' ? 'CB ' + active.currentTierLabel : active.currentTierLabel;
 
         document.getElementById('tier-badge-top').innerText = dispTier;
-        document.getElementById('sc-alokasi').innerText = formatRp(sc.allocation);
-        document.getElementById('sc-harga').innerText = formatRp(sc.sellingPrice);
-        document.getElementById('sc-pax').innerText = sc.pax;
-        document.getElementById('sc-cost').innerText = formatRp(costPax);
-        document.getElementById('sc-rev').innerText = formatRp(sc.revenue);
-        document.getElementById('sc-profit').innerText = formatRp(sc.profit);
+        document.getElementById('sc-alokasi').innerText = formatRp(active.allocation);
+        document.getElementById('sc-harga').innerText = formatRp(sellingPrice);
+        document.getElementById('sc-pax').innerText = active.pax;
+        document.getElementById('sc-cost').innerText = formatRp(totalCostPerPax);
+        document.getElementById('sc-rev').innerText = formatRp(active.revenue);
+        document.getElementById('sc-profit').innerText = formatRp(active.profit);
 
         document.getElementById('sum-tier').innerText = dispTier;
         document.getElementById('sum-kuota').innerText = totalQty;
-        document.getElementById('sum-cost-pax').innerText = formatRp(costPax);
-        document.getElementById('sum-rev').innerText = formatRp(sc.revenue);
-        document.getElementById('sum-food-cost').innerText = formatRp(sc.totalCost);
-        document.getElementById('sum-pct-cost').innerText = sc.costPct.toFixed(1) + '%';
-        document.getElementById('sum-tot-profit').innerText = formatRp(sc.profit);
+        document.getElementById('sum-cost-pax').innerText = formatRp(totalCostPerPax);
+        document.getElementById('sum-rev').innerText = formatRp(active.revenue);
+        document.getElementById('sum-food-cost').innerText = formatRp(active.totalCost);
+        document.getElementById('sum-pct-cost').innerText = active.costPct.toFixed(1) + '%';
+        document.getElementById('sum-tot-profit').innerText = formatRp(active.profit);
         document.getElementById('sum-profit-pax').innerText = formatRp(profitPax);
         document.getElementById('sum-pct-profit').innerText = pctProfit.toFixed(1) + '%';
         document.getElementById('sum-status').innerText = pctProfit >= 65 ? 'High' : pctProfit >= 50 ? 'Medium' : 'Low';
     }
 
     function resetMenus() {
-        document.querySelectorAll('#table-body select:not([disabled])').forEach(s => { s.value = ''; updateRowStatus(s, true); });
+        let selects = document.querySelectorAll('#table-body select:not([disabled])');
+        if(selects) {
+            for(let i=0; i<selects.length; i++) {
+                selects[i].value = '';
+                updateRowStatus(selects[i], true);
+            }
+        }
+        saveSelections();
         countTotalSelected();
     }
 
@@ -916,6 +1124,7 @@
     function renderDashboard() {
         let gPax = 0, gRev = 0, gCost = 0, gProfit = 0;
         let tbody = document.getElementById('db-table-body');
+        if(!tbody) return;
         tbody.innerHTML = '';
         let menuCount = {}; 
 
@@ -963,12 +1172,142 @@
                 meHtml += `</ul></div>`;
             }
         }
-        if(meHtml === '') meHtml = '<p style="padding:20px; text-align:center;">No menu selected yet.</p>';
+        if(meHtml === '') meHtml = '<p style="font-size:13px; color:var(--text-muted); grid-column: 1 / -1; padding:20px; text-align:center; background:#f8fafc; border-radius:12px;">No menu selected from any scenario yet.</p>';
         document.getElementById('db-menu-engineering').innerHTML = meHtml;
     }
 
+    // --- INTEGRASI SUPABASE ---
+    async function simpanTransaksiToSupabase() {
+        const evName = document.getElementById('ev-name').value || 'Unnamed Event';
+        const evBooker = document.getElementById('ev-booker').value || '-';
+        const evWa = document.getElementById('ev-wa').value || '-';
+        const evBeo = document.getElementById('ev-beo').value || '-';
+        const evSegment = document.getElementById('ev-segment').value || '-';
+        const evStatus = document.getElementById('ev-status').value || '-';
+        const evSales = document.getElementById('ev-sales').value || '-';
+        const evVenue = document.getElementById('ev-venue').value || '-';
+        const evDateInput = document.getElementById('ev-date').value;
+        
+        let dateStr = "-";
+        if(evDateInput) {
+            const d = new Date(evDateInput);
+            dateStr = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        let eventPax = 0;
+        let eventRevenue = 0;
+        let eventCost = 0;
+        let eventProfit = 0;
+
+        scenarios.forEach(sc => {
+            eventPax += sc.pax;
+            eventRevenue += sc.revenue;
+            eventCost += sc.totalCost;
+            eventProfit += sc.profit;
+        });
+
+        let eventCostPct = eventRevenue > 0 ? (eventCost / eventRevenue) * 100 : 0;
+
+        const newData = {
+            event_date: dateStr,
+            name: evName,
+            booker: evBooker,
+            wa: evWa,
+            beo: evBeo,
+            segment: evSegment,
+            status: evStatus,
+            sales: evSales,
+            venue: evVenue,
+            pax: eventPax,
+            revenue: eventRevenue,
+            cost: eventCost,
+            cost_pct: eventCostPct,
+            profit: eventProfit
+        };
+
+        if (supabase) {
+            document.getElementById('loader').style.display = 'flex';
+            const { data, error } = await supabase.from('transactions').insert([newData]);
+            document.getElementById('loader').style.display = 'none';
+
+            if (error) {
+                alert('Error saving to Supabase: ' + error.message);
+            } else {
+                alert(`Event Data "${evName}" successfully saved to Cloud Database!`);
+                transactionHistory.push(newData); 
+            }
+        } else {
+            transactionHistory.push(newData);
+            alert(`[Local Mode] Event Data "${evName}" saved successfully! (Supabase not configured).`);
+        }
+    }
+
+    async function fetchReportsFromSupabase() {
+        if(supabase) {
+            const { data, error } = await supabase.from('transactions').select('*').order('created_at', { ascending: false });
+            if(data && !error) {
+                transactionHistory = data; 
+            }
+        }
+    }
+
+    async function openReportModal() {
+        document.getElementById('reportModal').style.display = 'flex';
+        document.getElementById('loader').style.display = 'flex';
+        await fetchReportsFromSupabase();
+        document.getElementById('loader').style.display = 'none';
+        renderReportTable();
+    }
+
+    function closeReportModal() {
+        document.getElementById('reportModal').style.display = 'none';
+    }
+
+    function renderReportTable() {
+        let tbody = document.getElementById('report-table-body');
+        tbody.innerHTML = '';
+        
+        let tRev = 0, tCost = 0, tProfit = 0;
+
+        transactionHistory.forEach(trx => {
+            tRev += trx.revenue || 0;
+            tCost += trx.cost || 0;
+            tProfit += trx.profit || 0;
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td>${trx.event_date || trx.date}</td>
+                    <td style="font-weight:700;">${trx.name}</td>
+                    <td>${trx.booker}</td>
+                    <td>${trx.wa}</td>
+                    <td>${trx.beo}</td>
+                    <td>${trx.segment}</td>
+                    <td><span style="background:#e2e8f0; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:700;">${trx.status}</span></td>
+                    <td>${trx.sales}</td>
+                    <td>${trx.venue}</td>
+                    <td>${trx.pax}</td>
+                    <td>${formatRp(trx.revenue || 0)}</td>
+                    <td>${formatRp(trx.cost || 0)}</td>
+                    <td>${(trx.cost_pct || trx.costPct || 0).toFixed(1)}%</td>
+                    <td style="color:var(--primary-blue); font-weight:700;">${formatRp(trx.profit || 0)}</td>
+                </tr>
+            `;
+        });
+
+        let avgCostPct = tRev > 0 ? (tCost / tRev) * 100 : 0;
+
+        document.getElementById('rep-total-trx').innerText = transactionHistory.length;
+        document.getElementById('rep-total-rev').innerText = formatRp(tRev);
+        document.getElementById('rep-total-cost').innerText = formatRp(tCost);
+        document.getElementById('rep-avg-cost').innerText = avgCostPct.toFixed(1) + '%';
+        document.getElementById('rep-total-profit').innerText = formatRp(tProfit);
+    }
+
     // --- PRINT / PDF ---
-    function cetakStandard() { window.print(); }
+    function cetakStandard() {
+        document.body.classList.remove('print-surat-tamu');
+        window.print();
+    }
 
     function cetakSuratTamu() {
         document.getElementById('surat-booker').innerText = document.getElementById('ev-booker').value || 'Sir/Madam';
@@ -1001,7 +1340,7 @@
             menuHTML += `</div>`;
         });
 
-        menuHTML += `<div style="margin-top:25px; padding-top:15px; border-top:2px dashed #ccc; font-weight:bold; font-size:16px; text-align:right;">Total Estimated Price: ${formatRp(grandRev)}</div>`;
+        menuHTML += `<div style="margin-top:25px; padding-top:15px; border-top:2px dashed #ccc; font-weight:bold; font-size:16px; text-align:right;">Total Estimated Package Price: ${formatRp(grandRev)}</div>`;
         document.getElementById('surat-menu-list').innerHTML = menuHTML;
         
         document.body.classList.add('print-surat-tamu');
