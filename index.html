@@ -183,6 +183,11 @@
         .db-card span { font-size: 12px; font-weight: 600; opacity: 0.9; margin-bottom: 5px; display: block; white-space: nowrap;}
         .db-card strong { font-size: 24px; font-weight: 800; white-space: nowrap;}
         .db-table-wrapper { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: var(--card-shadow); margin-bottom:25px;}
+        
+        /* Table Recap Dashboard */
+        .recap-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 600px;}
+        .recap-table th { background: #f8fafc; padding: 12px 15px; font-weight: 800; color: var(--text-muted); border-bottom: 2px solid var(--border-color); white-space: nowrap;}
+        .recap-table td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); vertical-align: middle; white-space: nowrap;}
 
         /* --- MOBILE STYLES --- */
         .desktop-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px;}
@@ -197,23 +202,32 @@
         .modal-content {
             background: var(--bg-body); width: 100%; max-width: 1400px; max-height: 90vh;
             border-radius: 24px; overflow-y: auto; box-shadow: var(--modal-shadow); padding: 30px;
+            display: flex; flex-direction: column;
         }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .modal-header h2 { color: var(--dark-blue); font-size: 22px; font-weight: 800; }
         
+        /* Filter Laporan */
+        .report-filter { display: flex; gap: 15px; align-items: center; margin-bottom: 20px; background: var(--white); padding: 15px 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);}
+        .report-filter label { font-size: 13px; font-weight: 700; color: var(--text-muted); }
+        .report-filter input[type="date"] { padding: 10px 15px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-family: inherit; font-weight: 600;}
+        .btn-filter { background: var(--primary-blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px;}
+        .btn-filter-reset { background: #e2e8f0; color: var(--text-dark); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 13px;}
+
         .report-summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px; }
         .rs-box { background: #e0f2fe; padding: 20px; border-radius: 16px; }
         .rs-box span { display: block; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; white-space: nowrap;}
         .rs-box strong { display: block; font-size: 18px; color: var(--dark-blue); font-weight: 800; white-space: nowrap;}
         
-        /* FIX UNTUK TABEL REPORT AGAR TIDAK MENUMPUK */
-        .report-table-wrapper { background: var(--white); border-radius: 16px; overflow-x: auto; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; }
+        .report-table-wrapper { background: var(--white); border-radius: 16px; overflow-x: auto; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; flex-grow: 1;}
         .report-table { width: 100%; text-align: left; border-collapse: collapse; font-size: 13px; min-width: max-content; }
         
+        /* TWEAK: Rata Kiri & Lebar Aman untuk Kolom Date */
         .report-table th, .report-table td { padding: 16px 24px; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); white-space: nowrap !important; font-weight: 500;}
         .report-table th { background: #e2e8f0; font-weight: 800; color: var(--dark-blue); border-right: 1px solid #cbd5e1;}
+        .report-table td:first-child, .report-table th:first-child { min-width: 120px; text-align: left; } /* Kolom Date */
         
-        .modal-actions { display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; margin-top: auto;}
         .btn-green { background: #10b981; color: white; border: none; padding: 14px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 14px;}
         .btn-green:hover { background: #059669; }
 
@@ -236,6 +250,7 @@
             .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: 1fr 1fr; }
             .card { padding: 20px; border-radius: 16px; }
             .db-event-info { grid-template-columns: 1fr; gap: 10px; }
+            .report-filter { flex-direction: column; align-items: stretch; }
             
             .table-card { padding: 15px; background: transparent; box-shadow: none;}
             #menu-table, #menu-table thead, #menu-table tbody, #menu-table th, #menu-table td, #menu-table tr { display: block; width: 100%; }
@@ -311,32 +326,33 @@
         <div class="card">
             <div class="form-grid-2">
                 <div class="input-group">
-                    <label>Group / Event Name *</label>
+                    <label>Group / Event Name <span style="color:red">*</span></label>
                     <input type="text" id="ev-name" placeholder="e.g. Gala Dinner">
                 </div>
                 <div class="input-group">
-                    <label>PIC / Booker *</label>
+                    <label>PIC / Booker <span style="color:red">*</span></label>
                     <input type="text" id="ev-booker" placeholder="e.g. Mr. Santoso">
                 </div>
             </div>
             <div class="form-grid-2">
                 <div class="input-group">
-                    <label>Client Address</label>
+                    <label>Client Address <span style="color:red">*</span></label>
                     <input type="text" id="ev-address" placeholder="e.g. Jl. Sudirman No 10">
                 </div>
                 <div class="input-group">
-                    <label>WhatsApp Number *</label>
+                    <label>WhatsApp Number <span style="color:red">*</span></label>
                     <input type="tel" id="ev-wa" placeholder="081234567890">
                 </div>
             </div>
             <div class="form-grid-3">
                 <div class="input-group">
-                    <label>BEO / Memo *</label>
+                    <label>BEO / Memo <span style="color:red">*</span></label>
                     <input type="text" id="ev-beo" placeholder="BEO-2026-089">
                 </div>
                 <div class="input-group">
-                    <label>Segment *</label>
+                    <label>Segment <span style="color:red">*</span></label>
                     <select id="ev-segment">
+                        <option value="">- Select -</option>
                         <option>Corporate</option>
                         <option>Government</option>
                         <option>Social Event</option>
@@ -344,8 +360,9 @@
                     </select>
                 </div>
                 <div class="input-group">
-                    <label>Status *</label>
+                    <label>Status <span style="color:red">*</span></label>
                     <select id="ev-status">
+                        <option value="">- Select -</option>
                         <option>Tentative</option>
                         <option>Definite</option>
                         <option>Cancel</option>
@@ -354,20 +371,22 @@
             </div>
             <div class="form-grid-3" style="margin-bottom:0;">
                 <div class="input-group">
-                    <label>Sales Person *</label>
+                    <label>Sales Person <span style="color:red">*</span></label>
                     <select id="ev-sales">
+                        <option value="">- Select -</option>
                         <option>Nazar</option>
                         <option>Rina</option>
                         <option>Budi</option>
                     </select>
                 </div>
                 <div class="input-group">
-                    <label>Event Date *</label>
+                    <label>Event Date <span style="color:red">*</span></label>
                     <input type="date" id="ev-date">
                 </div>
                 <div class="input-group">
-                    <label>Venue / Room *</label>
+                    <label>Venue / Room <span style="color:red">*</span></label>
                     <select id="ev-venue">
+                        <option value="">- Select -</option>
                         <option>Convention Hall</option><option>Convention 1</option><option>Convention 2</option><option>Convention 3</option>
                         <option>Grand Ballroom</option><option>Ballroom 1</option><option>Ballroom 2</option><option>Ballroom 3</option>
                         <option>Titanium 1</option><option>Titanium 2</option><option>Titanium 3</option><option>Titanium 4</option><option>Titanium 5</option><option>Titanium 6</option>
@@ -388,7 +407,6 @@
         <div id="dashboard-view">
             <div class="db-header">
                 <h2>📊 Overall Event Dashboard</h2>
-                <!-- DASHBOARD INFO SEJAJAR (SATU BARIS) -->
                 <div class="db-event-info">
                     <div><span>Event Name</span><strong id="db-ev-name">-</strong></div>
                     <div><span>Booker</span><strong id="db-ev-booker">-</strong></div>
@@ -405,15 +423,15 @@
             
             <div class="db-table-wrapper" style="overflow-x:auto;">
                 <div class="card-title">Details per Scenario</div>
-                <table style="width:100%; border-collapse: collapse; text-align:left; font-size:14px; min-width: 600px;">
+                <table class="recap-table">
                     <thead>
-                        <tr style="border-bottom: 2px solid #e2e8f0; color:#64748b;">
-                            <th style="padding:15px; white-space:nowrap;">Scenario</th>
-                            <th style="padding:15px; white-space:nowrap;">Package</th>
-                            <th style="padding:15px; white-space:nowrap;">Pax</th>
-                            <th style="padding:15px; white-space:nowrap;">Price/Pax</th>
-                            <th style="padding:15px; white-space:nowrap;">Revenue</th>
-                            <th style="padding:15px; white-space:nowrap;">Profit</th>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Package</th>
+                            <th>Pax</th>
+                            <th>Price/Pax</th>
+                            <th>Revenue</th>
+                            <th>Profit</th>
                         </tr>
                     </thead>
                     <tbody id="db-table-body">
@@ -422,17 +440,31 @@
                 </table>
             </div>
 
-            <!-- MENU ENGINEERING FEATURE -->
+            <!-- MENU ENGINEERING FEATURE DI TAMPILAN DASHBOARD -->
             <div class="db-table-wrapper" style="margin-top: 20px;">
                 <div class="card-title">🧑‍🍳 Menu Engineering (Kitchen Recap)</div>
                 <p style="font-size:12px; color:var(--text-muted); margin-bottom: 20px; font-weight:500;">Combined menu list from all scenarios and total pax required for the operational team (Chef).</p>
-                <div id="db-menu-engineering" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
-                    <!-- Menu Engineering injected via JS -->
+                <div style="overflow-x:auto;">
+                    <table class="recap-table" id="db-menu-engineering-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Menu Item</th>
+                                <th>Cost / Item</th>
+                                <th>Total Pax Needed</th>
+                                <th>Total Cost Est.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="db-menu-engineering-body">
+                            <!-- Menu Engineering injected via JS -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <div class="desktop-actions" style="justify-content: center; margin-bottom:20px;">
-                <button class="btn-primary" style="width: 100%; max-width: 400px; padding:18px; font-size:16px;" onclick="simpanTransaksi()">💾 Save Event to Supabase</button>
+                <!-- TOMBOL SAVE DIUBAH SESUAI INSTRUKSI -->
+                <button class="btn-primary" style="width: 100%; max-width: 400px; padding:18px; font-size:16px;" onclick="simpanTransaksi()">💾 Save Online</button>
             </div>
         </div>
 
@@ -566,8 +598,8 @@
                 <!-- Desktop Actions -->
                 <div class="desktop-actions">
                     <button class="btn-red" onclick="resetMenus()">⟲ Reset Selection</button>
-                    <!-- BUTTON SAVE LANGSUNG KE SUPABASE, BUTTON PRINT VIEW DIHAPUS -->
-                    <button class="btn-primary" onclick="simpanTransaksi()">💾 Save to Supabase</button>
+                    <!-- TOMBOL SAVE DIUBAH SESUAI INSTRUKSI -->
+                    <button class="btn-primary" onclick="simpanTransaksi()">💾 Save Online</button>
                 </div>
             </div>
         </div>
@@ -575,7 +607,7 @@
         <!-- Sticky Bottom Bar for MOBILE ONLY -->
         <div class="mobile-bottom-bar">
             <button class="btn-mobile-secondary" onclick="openReportModal()">📑 Reports</button>
-            <button class="btn-mobile-primary" onclick="simpanTransaksi()">💾 Save Event</button>
+            <button class="btn-mobile-primary" onclick="simpanTransaksi()">💾 Save Online</button>
         </div>
 
     </div>
@@ -586,6 +618,16 @@
             <div class="modal-header">
                 <h2>Banquet Transaction Data Report</h2>
                 <button class="btn-outline" style="color:var(--dark-blue); border-color:var(--border-color); padding: 8px 15px;" onclick="closeReportModal()">✕ Close</button>
+            </div>
+
+            <!-- FILTER TANGGAL -->
+            <div class="report-filter">
+                <label>Filter Event Date:</label>
+                <input type="date" id="filter-date-from">
+                <span style="font-size: 13px; font-weight: 600; color:var(--text-muted);">to</span>
+                <input type="date" id="filter-date-to">
+                <button class="btn-filter" onclick="applyDateFilter()">Apply Filter</button>
+                <button class="btn-filter-reset" onclick="resetDateFilter()">Reset</button>
             </div>
 
             <div class="report-summary">
@@ -599,13 +641,12 @@
             <div class="report-table-wrapper">
                 <table class="report-table">
                     <thead>
-                        <!-- KOLOM REPORT URUT SESUAI PERMINTAAN USER -->
+                        <!-- KOLOM REPORT DIUBAH SESUAI INSTRUKSI: DATE (dilebarkan agar tidak numpuk), EVENT NAME (dihapus/digabung jadi Date Event), PRICE/PAX -->
                         <tr>
-                            <th>Date</th>
-                            <th>Event Name</th>
+                            <th style="min-width: 140px;">Date Event</th>
                             <th>PIC / Booker</th>
                             <th>Pax</th>
-                            <th>Avg Price / Pax</th>
+                            <th>Price / Pax</th>
                             <th>Revenue</th>
                             <th>Profit</th>
                         </tr>
@@ -618,7 +659,6 @@
 
             <div class="modal-actions" style="margin-bottom: 20px;">
                 <button class="btn-green" onclick="downloadExcel()">📥 Download Excel</button>
-                <!-- BUTTON PRINT REPORT DIHAPUS SESUAI INSTRUKSI -->
                 <button class="btn-primary" style="width:auto;" onclick="closeReportModal()">Close Report</button>
             </div>
         </div>
@@ -631,7 +671,6 @@
     const SUPABASE_URL = 'https://hupvhnvztvzqbdhuukpt.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1cHZobnZ6dHZ6cWJkaHV1a3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyNDY4NTIsImV4cCI6MjEwNTgyMjg1Mn0.E-XiAzngGIe_KAe2Znk201Jy55zwLUMOwL4cHhxQCPQ';
     
-    // Inisialisasi Supabase
     let dbClient = null;
     if(typeof window.supabase !== 'undefined') {
         dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -699,8 +738,9 @@
 
     // --- STATE MANAGEMENT ---
     let transactionHistory = [];
+    let filteredHistory = []; 
     let scenarios = [
-        { id: 1, name: 'Scenario A', mode: 'buffet', allocation: 200000, pax: 50, currentTierLabel: 'T4', totalCost: 0, sellingPrice: 0, revenue: 0, profit: 0, costPct: 0, selections: {} }
+        { id: 1, name: 'Scenario A', mode: 'buffet', allocation: 200000, pax: 50, currentTierLabel: 'T4', totalCost: 0, sellingPrice: 0, revenue: 0, profit: 0, costPct: 0, selections: {}, isMenuComplete: false }
     ];
     let activeScenarioId = 1;
     let scenarioCounter = 1;
@@ -756,7 +796,7 @@
         if(show) {
             document.getElementById('simulator-view').style.display = 'none';
             document.getElementById('dashboard-view').style.display = 'block';
-            renderDashboard();
+            renderDashboard(); // Render ulang dashboard termasuk recap menu setiap pindah ke tab ini
         } else {
             document.getElementById('simulator-view').style.display = 'block';
             document.getElementById('dashboard-view').style.display = 'none';
@@ -772,7 +812,7 @@
             allocation: 200000,
             pax: 50,
             currentTierLabel: 'T4',
-            totalCost: 0, sellingPrice:0, revenue: 0, profit: 0, costPct: 0, selections: {}
+            totalCost: 0, sellingPrice:0, revenue: 0, profit: 0, costPct: 0, selections: {}, isMenuComplete: false
         });
         isDashboardView = false;
         toggleDashboard(false);
@@ -868,7 +908,7 @@
             tr.innerHTML = `
                 <td data-label="No">${i + 1}</td>
                 <td data-label="Category" style="font-weight:700; color:var(--primary-blue); font-size:15px;" class="cat-name" data-catid="${cat.id}">${cat.id}</td>
-                <td data-label="Cost/Item">${formatRp(cat.cost)}</td>
+                <td data-label="Cost/Item" class="cat-cost" data-cost="${cat.cost}">${formatRp(cat.cost)}</td>
                 <td data-label="Qty" class="col-qty"><input type="number" value="${qty}" readonly></td>
                 <td data-label="Total/Pax" style="font-weight:700;">${qty === 0 ? 'Rp 0' : formatRp(rowCost)}</td>
                 <td data-label="Menu 1">${getSelectHTML(cat.id, 1, qty, active.mode, active)}</td>
@@ -994,6 +1034,8 @@
         let gqEl = document.getElementById('grand-qty');
         let totalQty = gqEl ? parseInt(gqEl.innerText) : 0;
         
+        let isComplete = true; // Flag untuk mengecek apakah semua menu terisi penuh
+        
         let rows = document.querySelectorAll('#table-body tr');
         for(let r=0; r<rows.length; r++) {
             let tr = rows[r];
@@ -1006,6 +1048,18 @@
                     if (selects[s].value.trim() !== "" && selects[s].value !== "—") filled++;
                 }
                 totalSelected += Math.min(filled, qty);
+                
+                if(filled < qty) {
+                    isComplete = false; 
+                }
+            }
+        }
+        
+        // Simpan status kelengkapan menu ke dalam array scenario
+        for (let i = 0; i < scenarios.length; i++) {
+            if (scenarios[i].id === activeScenarioId) {
+                scenarios[i].isMenuComplete = isComplete;
+                break;
             }
         }
         
@@ -1017,12 +1071,12 @@
 
         let banner = document.getElementById('menu-completion-banner');
         if(banner) {
-            if(totalQty > 0 && totalSelected >= totalQty) {
+            if(totalQty > 0 && isComplete) {
                 banner.className = 'banner-container banner-success';
                 banner.innerHTML = 'MENU IS COMPLETE <small>All menu selections for this scenario meet the quota.</small>';
             } else {
                 banner.className = 'banner-container banner-warning';
-                banner.innerHTML = 'COMPLETE THE MENU <small>Category status is checked based on the number of Menu choices compared to Qty.</small>';
+                banner.innerHTML = 'COMPLETE THE MENU <small>Category status is checked based on the number of Menu choices compared to Qty. Category with Qty 0 does not need to be filled.</small>';
             }
         }
     }
@@ -1074,6 +1128,7 @@
             dateStrEvent = new Date(evDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
         }
         
+        // RENDER INFO UTAMA
         document.getElementById('db-ev-name').innerText = evName;
         document.getElementById('db-ev-booker').innerText = evBooker;
         document.getElementById('db-ev-date').innerText = dateStrEvent;
@@ -1082,7 +1137,9 @@
         let tbody = document.getElementById('db-table-body');
         if(!tbody) return;
         tbody.innerHTML = '';
-        let menuCount = {}; 
+        
+        // KOMPILASI MENU ENGINEERING SECARA MENDETAIL UNTUK SEMUA SKENARIO
+        let menuRecap = {}; // Format: { "Category": { "Menu Item": { qty: X, cost_per_item: Y } } }
 
         for(let i=0; i<scenarios.length; i++) {
             let sc = scenarios[i];
@@ -1100,13 +1157,26 @@
                 </tr>
             `;
 
+            // Ekstrak cost per category dari array harga
+            let catCosts = {};
+            let catsData = (sc.mode === 'buffet') ? categoriesBuffet : categoriesCB;
+            for(let k=0; k<catsData.length; k++){
+                catCosts[catsData[k].id] = catsData[k].cost;
+            }
+
             if(sc.selections) {
                 for (const [cat, items] of Object.entries(sc.selections)) {
-                    if (!menuCount[cat]) menuCount[cat] = {};
+                    if (!menuRecap[cat]) menuRecap[cat] = {};
+                    
+                    let itemCost = catCosts[cat] || 0;
+
                     for(let j=0; j<items.length; j++) {
                         let item = items[j];
                         if (item && item !== "—" && item !== "") {
-                            menuCount[cat][item] = (menuCount[cat][item] || 0) + sc.pax; 
+                            if(!menuRecap[cat][item]) {
+                                menuRecap[cat][item] = { pax: 0, cost_per_item: itemCost };
+                            }
+                            menuRecap[cat][item].pax += sc.pax; // Tambahkan pax skenario ke akumulasi pax menu
                         }
                     }
                 }
@@ -1118,57 +1188,94 @@
         document.getElementById('db-tot-cost').innerText = formatRp(gCost);
         document.getElementById('db-tot-profit').innerText = formatRp(gProfit);
 
-        let meHtml = '';
-        for (const [cat, items] of Object.entries(menuCount)) {
-            if(Object.keys(items).length > 0) {
-                meHtml += `<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid var(--border-color);">`;
-                meHtml += `<h4 style="color:var(--dark-blue); margin-bottom:10px; border-bottom:1px solid #e2e8f0; padding-bottom:5px;">Category: ${cat}</h4>`;
-                meHtml += `<ul style="list-style:none; font-size:13px; line-height:1.8;">`;
-                for (const [itemName, qty] of Object.entries(items)) {
-                    meHtml += `<li style="display:flex; justify-content:space-between; border-bottom:1px dashed #e2e8f0; padding:4px 0;"><span>${itemName}</span> <strong style="color:var(--primary-blue);">${qty} Portions</strong></li>`;
+        // RENDER TABEL MENU ENGINEERING (KITCHEN RECAP)
+        let meTbody = document.getElementById('db-menu-engineering-body');
+        if(meTbody) {
+            meTbody.innerHTML = '';
+            let hasMenu = false;
+            
+            for (const [cat, items] of Object.entries(menuRecap)) {
+                let firstRow = true;
+                let itemKeys = Object.keys(items);
+                
+                if(itemKeys.length > 0) {
+                    hasMenu = true;
+                    for (let m = 0; m < itemKeys.length; m++) {
+                        let itemName = itemKeys[m];
+                        let itemData = items[itemName];
+                        let totalEstCost = itemData.cost_per_item * itemData.pax;
+                        
+                        let tr = document.createElement('tr');
+                        
+                        if(firstRow) {
+                            tr.innerHTML += `<td rowspan="${itemKeys.length}" style="font-weight:800; color:var(--dark-blue); border-right: 1px solid var(--border-color); background: var(--white); vertical-align: top;">${cat}</td>`;
+                            firstRow = false;
+                        }
+                        
+                        tr.innerHTML += `
+                            <td style="font-weight:600;">${itemName}</td>
+                            <td>${formatRp(itemData.cost_per_item)}</td>
+                            <td style="font-weight:800; color:var(--primary-blue); font-size:15px;">${itemData.pax} <small style="font-weight:500; color:var(--text-muted);">pax</small></td>
+                            <td>${formatRp(totalEstCost)}</td>
+                        `;
+                        meTbody.appendChild(tr);
+                    }
                 }
-                meHtml += `</ul></div>`;
+            }
+            
+            if(!hasMenu) {
+                meTbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">No menu selected from any scenario yet. Please select menus in the Simulator.</td></tr>`;
             }
         }
-        if(meHtml === '') meHtml = '<p style="font-size:13px; color:var(--text-muted); grid-column: 1 / -1; padding:20px; text-align:center; background:#f8fafc; border-radius:12px;">No menu selected from any scenario yet.</p>';
-        document.getElementById('db-menu-engineering').innerHTML = meHtml;
     }
 
-    // --- INTEGRASI SUPABASE (ONLINE) ---
+    // --- INTEGRASI SUPABASE (ONLINE) + VALIDASI KETAT ---
     async function simpanTransaksi() {
         const evName = document.getElementById('ev-name').value;
         const evBooker = document.getElementById('ev-booker').value;
+        const evWa = document.getElementById('ev-wa').value;
+        const evBeo = document.getElementById('ev-beo').value;
+        const evSegment = document.getElementById('ev-segment').value;
+        const evStatus = document.getElementById('ev-status').value;
+        const evSales = document.getElementById('ev-sales').value;
+        const evVenue = document.getElementById('ev-venue').value;
+        const evDateInput = document.getElementById('ev-date').value;
         
-        // VALIDASI: Cegah penyimpanan kosong ke Supabase
-        if (!evName || !evBooker) {
-            alert("Harap lengkapi pengisian 'Group / Event Name' dan 'PIC / Booker' terlebih dahulu sebelum menyimpan event ke server!");
+        // 1. VALIDASI: Form Utama Harus Terisi Penuh (Event Name, Booker, dll)
+        if (!evName || !evBooker || !evWa || !evBeo || evSegment === "" || evStatus === "" || evSales === "" || evVenue === "" || !evDateInput) {
+            alert("GAGAL MENYIMPAN: Harap isi SEMUA kolom formulir utama pada bagian atas (Group/Event Name, Booker, WhatsApp, BEO, Segment, Status, Sales, Date, dan Venue) terlebih dahulu sebelum menyimpan event!");
             return;
         }
 
-        const evWa = document.getElementById('ev-wa').value || '-';
-        const evBeo = document.getElementById('ev-beo').value || '-';
-        const evSegment = document.getElementById('ev-segment').value || '-';
-        const evStatus = document.getElementById('ev-status').value || '-';
-        const evSales = document.getElementById('ev-sales').value || '-';
-        const evVenue = document.getElementById('ev-venue').value || '-';
-        const evDateInput = document.getElementById('ev-date').value;
-        
-        let dateStr = "-";
-        if(evDateInput) {
-            const d = new Date(evDateInput);
-            dateStr = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        // 2. VALIDASI: Status Menu Harus 'Complete' di Semua Skenario
+        for(let i=0; i<scenarios.length; i++) {
+            if(!scenarios[i].isMenuComplete) {
+                alert(`GAGAL MENYIMPAN: Terdapat menu yang belum dipilih secara lengkap pada "${scenarios[i].name}". Harap kembali ke skenario tersebut, buka bagian Menu Selection, dan lengkapi kuota pilihan menu Anda.`);
+                return;
+            }
         }
+
+        let dateStr = new Date(evDateInput).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
         let eventPax = 0;
         let eventRevenue = 0;
         let eventCost = 0;
         let eventProfit = 0;
+        let menuDetailsJson = [];
 
         for(let i=0; i<scenarios.length; i++) {
             eventPax += scenarios[i].pax;
             eventRevenue += scenarios[i].revenue;
             eventCost += scenarios[i].totalCost;
             eventProfit += scenarios[i].profit;
+            
+            menuDetailsJson.push({
+                scenario_name: scenarios[i].name,
+                package: scenarios[i].mode,
+                tier: scenarios[i].currentTierLabel,
+                pax: scenarios[i].pax,
+                selections: scenarios[i].selections
+            });
         }
 
         let eventCostPct = eventRevenue > 0 ? (eventCost / eventRevenue) * 100 : 0;
@@ -1187,7 +1294,8 @@
             revenue: eventRevenue,
             cost: eventCost,
             cost_pct: eventCostPct,
-            profit: eventProfit
+            profit: eventProfit,
+            menu_details: JSON.stringify(menuDetailsJson) 
         };
 
         // PUSH KE ONLINE SUPABASE
@@ -1201,26 +1309,29 @@
                 if (error) {
                     throw error;
                 } else {
-                    alert(`Event Data "${evName}" successfully saved to Online Database!`);
+                    alert(`SUKSES: Event Data "${evName}" berhasil disimpan ke Online Database!`);
                 }
             } catch (err) {
                 document.getElementById('loader').style.display = 'none';
-                alert('Gagal menyimpan ke Database Online: ' + err.message);
+                alert('Gagal menyimpan ke Database Online. Pastikan koneksi Supabase Anda benar.\n\nError: ' + err.message);
             }
         } else {
-            alert(`Sistem Database Belum Terkoneksi.`);
+            alert(`Sistem Database Belum Terkoneksi. Hubungkan ke Supabase terlebih dahulu.`);
         }
     }
 
-    // FETCH (DOWNLOAD) DATA TERBARU DARI SERVER UNTUK SEMUA SALES
+    // FETCH (DOWNLOAD) DATA DARI SUPABASE + FILTER TANGGAL
     async function fetchReportsFromSupabase() {
         if(dbClient) {
             try {
                 const { data, error } = await dbClient.from('transactions').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
-                if(data) { transactionHistory = data; }
+                if(data) { 
+                    transactionHistory = data; 
+                    filteredHistory = [...transactionHistory]; 
+                }
             } catch (err) {
-                console.error("Gagal menarik data dari server online:", err.message);
+                console.error("Gagal menarik data:", err.message);
             }
         }
     }
@@ -1229,25 +1340,54 @@
         document.getElementById('reportModal').style.display = 'flex';
         document.getElementById('loader').style.display = 'flex';
         
-        // Sinkronisasi data real-time ke Supabase setiap kali modal Report dibuka
         await fetchReportsFromSupabase();
         
         document.getElementById('loader').style.display = 'none';
-        renderReportTable();
+        renderReportTable(filteredHistory);
     }
 
     function closeReportModal() {
         document.getElementById('reportModal').style.display = 'none';
     }
 
-    function renderReportTable() {
+    // FILTER TANGGAL REPORT
+    function applyDateFilter() {
+        let dateFrom = document.getElementById('filter-date-from').value;
+        let dateTo = document.getElementById('filter-date-to').value;
+
+        if(!dateFrom && !dateTo) {
+            filteredHistory = [...transactionHistory];
+            renderReportTable(filteredHistory);
+            return;
+        }
+
+        let fromTime = dateFrom ? new Date(dateFrom).setHours(0,0,0,0) : -Infinity;
+        let toTime = dateTo ? new Date(dateTo).setHours(23,59,59,999) : Infinity;
+
+        filteredHistory = transactionHistory.filter(trx => {
+            if(!trx.event_date || trx.event_date === "-") return false; 
+            let dTime = new Date(trx.event_date).getTime();
+            return dTime >= fromTime && dTime <= toTime;
+        });
+
+        renderReportTable(filteredHistory);
+    }
+
+    function resetDateFilter() {
+        document.getElementById('filter-date-from').value = "";
+        document.getElementById('filter-date-to').value = "";
+        filteredHistory = [...transactionHistory];
+        renderReportTable(filteredHistory);
+    }
+
+    function renderReportTable(dataToRender) {
         let tbody = document.getElementById('report-table-body');
         tbody.innerHTML = '';
         
         let tRev = 0, tCost = 0, tProfit = 0;
 
-        for(let i=0; i<transactionHistory.length; i++) {
-            let trx = transactionHistory[i];
+        for(let i=0; i<dataToRender.length; i++) {
+            let trx = dataToRender[i];
             tRev += trx.revenue || 0;
             tCost += trx.cost || 0;
             tProfit += trx.profit || 0;
@@ -1257,7 +1397,6 @@
             tbody.innerHTML += `
                 <tr>
                     <td>${trx.event_date || trx.date || '-'}</td>
-                    <td style="font-weight:700;">${trx.name || '-'}</td>
                     <td>${trx.booker || '-'}</td>
                     <td>${trx.pax || 0}</td>
                     <td>${formatRp(avgPrice)}</td>
@@ -1269,31 +1408,30 @@
 
         let avgCostPct = tRev > 0 ? (tCost / tRev) * 100 : 0;
 
-        document.getElementById('rep-total-trx').innerText = transactionHistory.length;
+        document.getElementById('rep-total-trx').innerText = dataToRender.length;
         document.getElementById('rep-total-rev').innerText = formatRp(tRev);
         document.getElementById('rep-total-cost').innerText = formatRp(tCost);
         document.getElementById('rep-avg-cost').innerText = avgCostPct.toFixed(1) + '%';
         document.getElementById('rep-total-profit').innerText = formatRp(tProfit);
     }
 
-    // --- DOWNLOAD EXCEL (CSV) ---
+    // --- DOWNLOAD EXCEL (CSV) HANYA DATA TERFILTER ---
     function downloadExcel() {
-        if(transactionHistory.length === 0) {
-            alert("No data available to download. Please check the online database connection.");
+        if(filteredHistory.length === 0) {
+            alert("No data available to download.");
             return;
         }
 
         let csvContent = "data:text/csv;charset=utf-8,";
-        // Header CSV
-        csvContent += "Event Date,Event Name,PIC / Booker,Total Pax,Avg Price,Total Revenue,Total Profit\n";
+        // Header disesuaikan dengan Report UI Baru
+        csvContent += "Event Date,PIC / Booker,Total Pax,Price / Pax,Total Revenue,Total Profit\n";
 
-        for(let i=0; i<transactionHistory.length; i++) {
-            let trx = transactionHistory[i];
+        for(let i=0; i<filteredHistory.length; i++) {
+            let trx = filteredHistory[i];
             let avgPrice = trx.pax > 0 ? (trx.revenue / trx.pax) : 0;
 
             let rowArray = [
                 `"${trx.event_date || trx.date || ''}"`,
-                `"${trx.name || ''}"`,
                 `"${trx.booker || ''}"`,
                 trx.pax || 0,
                 avgPrice,
