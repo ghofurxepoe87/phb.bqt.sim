@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#023e8a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Platinum Hotel - Banquet Simulator App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0077b6;
+            --secondary-blue: #0096c7;
+            --dark-blue: #023e8a;
+            --bg-body: #f1f5f9;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --white: #ffffff;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --modal-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent;}
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-dark); 
+            padding-bottom: calc(80px + env(safe-area-inset-bottom));
+            overflow-x: hidden; 
+        }
+
+        /* --- HEADER STYLES --- */
+        .header {
+            background: linear-gradient(90deg, var(--dark-blue) 0%, var(--primary-blue) 50%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: calc(20px + env(safe-area-inset-top)) 40px 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        .logo-box {
+            background: var(--white); padding: 12px 24px; border-radius: 12px;
+            color: var(--primary-blue); font-weight: 800; font-size: 18px; text-align: center;
+            letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .logo-box small { display: block; font-size: 9px; font-weight: 600; letter-spacing: 0; color: var(--text-dark); margin-top:2px;}
+        .header-title h1 { font-size: 20px; margin-bottom: 4px; font-weight: 700; }
+        .header-title p { font-size: 12px; font-weight: 500; opacity: 0.9; }
+        
+        .header-actions { display: grid; grid-template-columns: repeat(3, auto); gap: 10px; }
+        .btn-outline {
+            background: transparent; border: 1px solid rgba(255,255,255,0.4); color: var(--white);
+            padding: 10px 18px; border-radius: 25px; font-size: 13px; cursor: pointer;
+            transition: all 0.2s; font-weight: 600;
+        }
+        .btn-outline:hover { background: rgba(255,255,255,0.15); border-color: var(--white); }
+        .btn-solid-white {
+            background: var(--white); color: var(--primary-blue); border: none;
+            padding: 10px 18px; border-radius: 25px; font-size: 13px; cursor: pointer; font-weight: 700; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container { max-width: 1450px; margin: 30px auto; padding: 0 20px; }
+
+        /* --- FORM EVENT STYLES --- */
+        .card { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: var(--card-shadow); margin-bottom: 20px;}
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;}
+        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;}
+        .input-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); }
+        .input-group input, .input-group select {
+            width: 100%; padding: 14px 15px; border: 1.5px solid var(--border-color);
+            border-radius: 12px; font-size: 14px; font-weight: 600; color: var(--text-dark);
+            background: #f8fafc; outline: none; transition: 0.2s; appearance: none; 
+        }
+        .input-group input:focus, .input-group select:focus { border-color: var(--secondary-blue); background: var(--white); box-shadow: 0 0 0 3px rgba(0,150,199,0.1);}
+
+        /* --- SCENARIO TABS (SWIPEABLE) --- */
+        .scenario-tabs { 
+            display: flex; gap: 10px; margin-bottom: 20px; 
+            overflow-x: auto; -webkit-overflow-scrolling: touch; 
+            padding-bottom: 10px; scrollbar-width: none; 
+        }
+        .scenario-tabs::-webkit-scrollbar { display: none; }
+        .sc-tab {
+            background: #e2e8f0; color: var(--text-muted); border: none; padding: 12px 24px;
+            border-radius: 25px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s;
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .sc-tab.active { background: var(--secondary-blue); color: var(--white); box-shadow: 0 4px 10px rgba(0,150,199,0.3);}
+
+        /* --- TOP LAYOUT & BLUE CARD --- */
+        .top-grid { display: grid; grid-template-columns: 320px 1fr; gap: 25px; margin-bottom: 25px; align-items: start;}
+        
+        .scenario-card {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); 
+            border-radius: 24px; color: var(--white); padding: 25px; position: relative; 
+            box-shadow: 0 10px 20px rgba(0,119,182,0.2); width: 100%;
+        }
+        .tier-badge {
+            position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.25);
+            padding: 6px 14px; border-radius: 15px; font-size: 12px; font-weight: 800; backdrop-filter: blur(4px);
+        }
+        .scenario-card h3 { font-size: 20px; margin-bottom: 25px; font-weight: 800; letter-spacing: 0.5px;}
+        .scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 12px; margin-bottom: 25px;}
+        .sc-val { font-size: 18px; font-weight: 800; margin-top: 5px; display: block; letter-spacing: 0.5px;}
+        .scenario-footer { display: flex; justify-content: space-between; align-items: center; font-size: 13px;}
+        .btn-sc-action { background: rgba(255,255,255,0.25); border:none; color:white; padding: 10px 20px; border-radius: 20px; cursor:pointer; font-weight: 700; font-size: 12px;}
+        
+        .scenario-controls { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;}
+        .scenario-controls button { flex: 1; }
+        .btn-primary { background: var(--secondary-blue); color: white; border: none; padding: 14px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,150,199,0.2);}
+        .btn-danger-outline { background: transparent; color: #ef4444; border: 1.5px solid #fca5a5; padding: 14px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer;}
+        
+        /* --- CONTROL PANEL & SUMMARY --- */
+        .card-title { font-size: 18px; font-weight: 800; color: var(--dark-blue); margin-bottom: 20px; }
+        .cp-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .cp-row input { font-size: 22px; font-weight: 800; color: var(--primary-blue);}
+        .cp-row input:disabled { background: #e2e8f0; color: var(--text-muted); }
+        .input-hint { font-size: 11px; color: var(--text-muted); margin-top: 8px; display: block; line-height: 1.4; font-weight: 500;}
+
+        /* Summary Capsules */
+        .summary-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
+        .stat-capsule { background: #f8fafc; padding: 15px; border-radius: 16px; border: 1px solid var(--border-color);}
+        .stat-capsule span { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; font-weight: 600;}
+        .stat-capsule strong { display: block; font-size: 16px; color: var(--dark-blue); font-weight: 800;}
+
+        /* --- RESPONSIVE TABLE APP STYLE --- */
+        .table-card { background: var(--white); border-radius: 20px; box-shadow: var(--card-shadow); padding: 20px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; table-layout: fixed;}
+        th { background: #f8fafc; padding: 16px 15px; font-weight: 800; color: var(--text-muted); border-bottom: 2px solid var(--border-color); }
+        td { padding: 14px 15px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+        
+        /* Column Widths Desktop */
+        th:nth-child(1) { width: 4%; text-align: center; }
+        th:nth-child(2) { width: 14%; }
+        th:nth-child(3) { width: 10%; }
+        th:nth-child(4) { width: 6%; text-align: center; }
+        th:nth-child(5) { width: 12%; }
+        th:nth-child(6), th:nth-child(7), th:nth-child(8) { width: 15%; }
+        th:nth-child(9) { width: 9%; text-align: center; }
+        
+        td:nth-child(1) { text-align: center; font-weight: 700;}
+        .col-qty input { width: 100%; padding: 10px; text-align: center; border: 1.5px solid var(--border-color); border-radius: 8px; background:#f8fafc; font-weight:800; font-size: 14px;}
+        
+        .menu-select { 
+            width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); 
+            border-radius: 10px; font-size: 13px; color: var(--text-dark);
+            background: #fff; cursor: pointer; font-weight: 600; appearance: none;
+        }
+        .menu-select:focus { border-color: var(--secondary-blue); box-shadow: 0 0 0 3px rgba(0,150,199,0.1); }
+        .menu-select:disabled { appearance: none; -webkit-appearance: none; background: transparent; color: #94a3b8; border-color: transparent; text-align: center;}
+
+        .status-badge { padding: 8px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-align: center; display: block; width: 100%;}
+        .badge-sesuai { background: #d1fae5; color: #047857; }
+        .badge-lengkapi { background: #fef3c7; color: #b45309; }
+
+        /* Dynamic Banner Styles */
+        .banner-container { padding: 20px 25px; font-weight: 800; font-size: 15px; border-radius: 12px; margin-top: 20px; transition: all 0.3s;}
+        .banner-container small { display: block; font-weight: 600; font-size: 11px; margin-top: 6px; opacity: 0.9;}
+        .banner-warning { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .banner-success { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
+
+        /* --- DASHBOARD EVENT STYLES --- */
+        #dashboard-view { display: none; }
+        .db-header { background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue)); color: white; padding: 30px; border-radius: 20px; margin-bottom: 25px; box-shadow: var(--card-shadow);}
+        .db-header h2 { font-size: 24px; margin-bottom: 8px; font-weight: 800;}
+        .db-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 25px;}
+        .db-card { background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px);}
+        .db-card span { font-size: 13px; font-weight: 600; opacity: 0.9; margin-bottom: 5px; display: block;}
+        .db-card strong { font-size: 26px; font-weight: 800;}
+        .db-table-wrapper { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: var(--card-shadow); margin-bottom:25px;}
+
+        /* --- STICKY BOTTOM APP BAR (MOBILE) --- */
+        .desktop-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px;}
+        .mobile-bottom-bar { display: none; }
+
+        /* --- MODAL REPORT STYLES --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7); z-index: 1000; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px); padding: 15px;
+        }
+        .modal-content {
+            background: var(--bg-body); width: 100%; max-width: 1400px; max-height: 90vh;
+            border-radius: 24px; overflow-y: auto; box-shadow: var(--modal-shadow); padding: 30px;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .modal-header h2 { color: var(--dark-blue); font-size: 22px; font-weight: 800; }
+        
+        .report-summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px; }
+        .rs-box { background: #e0f2fe; padding: 20px; border-radius: 16px; }
+        .rs-box span { display: block; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px;}
+        .rs-box strong { display: block; font-size: 18px; color: var(--dark-blue); font-weight: 800;}
+        
+        .report-table-wrapper { background: var(--white); border-radius: 16px; overflow-x: auto; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        /* Make report table wider to fit all columns */
+        .report-table { width: 100%; text-align: left; border-collapse: collapse; font-size: 13px; min-width: 1600px; }
+        .report-table th { background: #e2e8f0; padding: 16px; font-weight: 800; color: var(--dark-blue); }
+        .report-table td { padding: 16px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
+
+        /* =========================================
+           MOBILE APP RESPONSIVE STYLES (ANDROID/IOS)
+           ========================================= */
+        @media (max-width: 1024px) {
+            .top-grid { grid-template-columns: 1fr; }
+            .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 15px; text-align: center; padding: calc(15px + env(safe-area-inset-top)) 20px 20px 20px; border-radius: 0 0 20px 20px; }
+            .header-left { flex-direction: column; }
+            .header-actions { display: none; } 
+            
+            .container { padding: 0 15px; margin-top: 20px; }
+            .form-grid-2, .form-grid-3, .cp-row { grid-template-columns: 1fr; gap: 15px; }
+            .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: 1fr 1fr; }
+            .card { padding: 20px; border-radius: 16px; }
+            
+            /* Card-based Table for Mobile */
+            .table-card { padding: 15px; background: transparent; box-shadow: none;}
+            table, thead, tbody, th, td, tr { display: block; width: 100%; }
+            thead tr { display: none; } 
+            tr { 
+                background: var(--white); margin-bottom: 15px; border-radius: 16px; 
+                padding: 15px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color);
+            }
+            td { 
+                display: flex; align-items: center; justify-content: space-between; 
+                padding: 10px 0; border: none !important; border-bottom: 1px dashed var(--border-color) !important; 
+            }
+            td:last-child { border-bottom: none !important; padding-bottom: 0;}
+            td:first-child { display: none; } 
+            
+            td::before { 
+                content: attr(data-label); font-weight: 700; color: var(--text-muted); 
+                font-size: 13px; width: 35%; flex-shrink: 0;
+            }
+            
+            td > select, td > input, td > span { width: 65%; font-size: 14px;}
+            td > span.status-badge { width: auto; padding: 8px 16px; font-size: 12px; }
+            tr:last-child { display: none; } 
+
+            .desktop-actions { display: none; } 
+            
+            /* Sticky Bottom Bar for Mobile */
+            .mobile-bottom-bar {
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
+                background: var(--white); box-shadow: 0 -5px 20px rgba(0,0,0,0.08);
+                padding: 12px 15px calc(12px + env(safe-area-inset-bottom));
+                justify-content: space-between; z-index: 100; border-top-left-radius: 20px; border-top-right-radius: 20px;
+                gap: 10px;
+            }
+            .mobile-bottom-bar button {
+                flex: 1; padding: 14px 10px; border-radius: 14px; font-size: 12px; font-weight: 700; border: none; cursor: pointer;
+            }
+            .btn-mobile-primary { background: var(--primary-blue); color: white; }
+            .btn-mobile-secondary { background: #e2e8f0; color: var(--dark-blue); }
+            
+            .modal-content { padding: 20px; border-radius: 16px;}
+            .modal-header h2 { font-size: 18px; }
+            .modal-actions { flex-direction: column; }
+            .modal-actions button { width: 100%; padding: 14px; font-size: 14px; }
+        }
+
+        @media (max-width: 480px) {
+            .summary-grid, .db-summary-grid { grid-template-columns: 1fr 1fr; }
+            .report-summary { grid-template-columns: 1fr 1fr; }
+            .header-actions { grid-template-columns: 1fr; }
+            .scenario-grid { grid-template-columns: 1fr; gap: 10px;}
+        }
+
+        /* PRINT STYLES - Surat Tamu PDF */
+        #surat-tamu-container { display: none; }
+        @media print {
+            body { background: var(--white); color: #000; padding: 0; margin: 0; overflow: visible;}
+            .header, .header-actions, .mobile-bottom-bar, .desktop-actions, .scenario-tabs, .scenario-controls, .banner-container, .btn-sc-action, .modal-overlay, #dashboard-view {
+                display: none !important;
+            }
+            .container { max-width: 100%; margin: 0; padding: 0; box-shadow: none; }
+            body.print-surat-tamu .card, body.print-surat-tamu .top-grid, body.print-surat-tamu .table-card { display: none !important; }
+            body.print-surat-tamu #surat-tamu-container { display: block !important; padding: 40px; font-size: 14px; line-height: 1.6; }
+            .kop-surat { text-align: center; border-bottom: 3px solid var(--dark-blue); padding-bottom: 20px; margin-bottom: 30px; }
+            .kop-surat h1 { color: var(--primary-blue); font-size: 28px; letter-spacing: 2px; margin-bottom: 5px;}
+            .kop-surat p { font-size: 12px; color: #555; }
+            .surat-header { margin-bottom: 30px; }
+            .surat-header .tanggal-surat { text-align: right; margin-bottom: 20px;}
+            .surat-header .tujuan { font-weight: 600; }
+            .surat-body { margin-bottom: 30px; }
+            .surat-body table { width: 100%; margin: 20px 0; border: none; min-width: auto; display:table;}
+            .surat-body table tr { display: table-row; box-shadow: none; border:none; padding:0; margin:0;}
+            .surat-body table td { display: table-cell; padding: 8px 0; border: none; vertical-align: top;}
+            .surat-body table td::before { display: none; }
+            .surat-body table td:first-child { width: 30%; font-weight: 600; display: table-cell;}
+            .menu-list-container { margin-top: 30px; border: 1px solid #ccc; border-radius: 8px; padding: 20px; page-break-inside: avoid;}
+            .menu-list-container h3 { margin-bottom: 15px; color: var(--dark-blue); border-bottom: 1px solid #eee; padding-bottom: 10px;}
+            .menu-item { margin-bottom: 10px; display: flex;}
+            .menu-item .cat { width: 30%; font-weight: 600; }
+            .menu-item .items { width: 70%; }
+            .surat-footer { margin-top: 50px; page-break-inside: avoid; }
+            .ttd-box { width: 250px; text-align: left; margin-top: 30px; }
+            .ttd-box .nama { margin-top: 80px; font-weight: 700; text-decoration: underline;}
+            @page { margin: 1cm; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header / Top App Bar -->
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-box">
+                PLATINUM
+                <small>HOTEL & CONVENTION HALL<br>BALIKPAPAN</small>
+            </div>
+            <div class="header-title">
+                <h1>Banquet Package Simulator</h1>
+                <p>Transaction Record System</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-solid-white" onclick="tambahSkenario()">+ New Simulation</button>
+            <button class="btn-outline" onclick="openReportModal()">📑 Reports</button>
+            <button class="btn-outline" onclick="cetakSuratTamu()">PDF to Guest</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Event Form Card -->
+        <div class="card">
+            <div class="form-grid-2">
+                <div class="input-group">
+                    <label>Group / Event Name *</label>
+                    <input type="text" id="ev-name" placeholder="e.g. Gala Dinner">
+                </div>
+                <div class="input-group">
+                    <label>PIC / Booker *</label>
+                    <input type="text" id="ev-booker" placeholder="e.g. Mr. Santoso">
+                </div>
+            </div>
+            <div class="form-grid-2">
+                <div class="input-group">
+                    <label>Client Address</label>
+                    <input type="text" id="ev-address" placeholder="e.g. Jl. Sudirman No 10">
+                </div>
+                <div class="input-group">
+                    <label>WhatsApp Number *</label>
+                    <input type="tel" id="ev-wa" placeholder="081234567890">
+                </div>
+            </div>
+            <div class="form-grid-3">
+                <div class="input-group">
+                    <label>BEO / Memo *</label>
+                    <input type="text" id="ev-beo" placeholder="BEO-2026-089">
+                </div>
+                <div class="input-group">
+                    <label>Segment *</label>
+                    <select id="ev-segment">
+                        <option>Corporate</option>
+                        <option>Government</option>
+                        <option>Social Event</option>
+                        <option>Wedding</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Status *</label>
+                    <select id="ev-status">
+                        <option>Tentative</option>
+                        <option>Definite</option>
+                        <option>Cancel</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-grid-3" style="margin-bottom:0;">
+                <div class="input-group">
+                    <label>Sales Person *</label>
+                    <select id="ev-sales">
+                        <option>Nazar</option>
+                        <option>Rina</option>
+                        <option>Budi</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Event Date *</label>
+                    <input type="date" id="ev-date">
+                </div>
+                <div class="input-group">
+                    <label>Venue / Room *</label>
+                    <select id="ev-venue">
+                        <option>Convention Hall</option><option>Convention 1</option><option>Convention 2</option><option>Convention 3</option>
+                        <option>Grand Ballroom</option><option>Ballroom 1</option><option>Ballroom 2</option><option>Ballroom 3</option>
+                        <option>Titanium 1</option><option>Titanium 2</option><option>Titanium 3</option><option>Titanium 4</option><option>Titanium 5</option><option>Titanium 6</option>
+                        <option>Rhodium 1</option><option>Rhodium 2</option><option>Rhodium 3</option><option>Rhodium 4</option><option>Rhodium 5</option><option>Rhodium 6</option>
+                        <option>Rhodium 7</option><option>Rhodium 8</option><option>Rhodium 9</option><option>Rhodium 10</option><option>Rhodium 11</option><option>Rhodium 12</option>
+                        <option>Canton Restaurant</option><option>PDR Canton</option><option>PDR Palladium</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scrollable Scenario Tabs -->
+        <div class="scenario-tabs" id="scenario-tabs">
+            <!-- Tabs injected via JS -->
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboard-view">
+            <div class="db-header">
+                <h2>📊 Overall Event Dashboard</h2>
+                <p>Total summary of all scenarios in this event.</p>
+                <div class="db-summary-grid">
+                    <div class="db-card"><span>Total Pax</span><strong id="db-tot-pax">0</strong></div>
+                    <div class="db-card"><span>Total Grand Revenue</span><strong id="db-tot-rev">Rp 0</strong></div>
+                    <div class="db-card"><span>Total Grand Cost</span><strong id="db-tot-cost">Rp 0</strong></div>
+                    <div class="db-card"><span>Total Net Profit</span><strong id="db-tot-profit">Rp 0</strong></div>
+                </div>
+            </div>
+            
+            <div class="db-table-wrapper" style="overflow-x:auto;">
+                <div class="card-title">Details per Scenario</div>
+                <table class="report-table" style="min-width: 600px;">
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Package</th>
+                            <th>Pax</th>
+                            <th>Price/Pax</th>
+                            <th>Revenue</th>
+                            <th>Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="db-table-body">
+                        <!-- Injected -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- MENU ENGINEERING FEATURE -->
+            <div class="db-table-wrapper" style="margin-top: 20px;">
+                <div class="card-title">🧑‍🍳 Menu Engineering (Kitchen Recap)</div>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom: 20px; font-weight:500;">Combined menu list from all scenarios and total pax required for the operational team (Chef).</p>
+                <div id="db-menu-engineering" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+                    <!-- Menu Engineering injected via JS -->
+                </div>
+            </div>
+
+            <div class="desktop-actions" style="justify-content: center; margin-bottom:20px;">
+                <button class="btn-primary" style="width: 100%; max-width: 400px; padding:18px; font-size:16px;" onclick="simpanTransaksi()">💾 Save Event Transaction</button>
+            </div>
+        </div>
+
+        <!-- SIMULATOR VIEW -->
+        <div id="simulator-view">
+            <div class="top-grid">
+                <!-- Blue Card -->
+                <div>
+                    <div class="scenario-card">
+                        <div class="tier-badge" id="tier-badge-top">T4</div>
+                        <h3 id="sc-title-display">Scenario A</h3>
+                        <div class="scenario-grid">
+                            <div>
+                                <span>Allocation / pax</span>
+                                <span class="sc-val" id="sc-alokasi">Rp 200.000</span>
+                            </div>
+                            <div>
+                                <span>Selling price / pax</span>
+                                <span class="sc-val" id="sc-harga">Rp 200.000</span>
+                            </div>
+                            <div>
+                                <span>Pax</span>
+                                <span class="sc-val" id="sc-pax">50</span>
+                            </div>
+                            <div>
+                                <span>Cost / pax</span>
+                                <span class="sc-val" id="sc-cost">Rp 45.000</span>
+                            </div>
+                            <div>
+                                <span>Revenue</span>
+                                <span class="sc-val" id="sc-rev">Rp 10.000.000</span>
+                            </div>
+                            <div>
+                                <span>Profit</span>
+                                <span class="sc-val" id="sc-profit">Rp 7.750.000</span>
+                            </div>
+                        </div>
+                        <div class="scenario-footer">
+                            <button class="btn-sc-action" onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });">SELECT MENU ↓</button>
+                            <span id="sc-menu-status" style="font-weight:700;">Menu 0/8</span>
+                        </div>
+                    </div>
+                    <div class="scenario-controls">
+                        <button class="btn-primary" onclick="tambahSkenario()">+ Add Scenario</button>
+                        <button class="btn-danger-outline" onclick="hapusSkenario()">🗑 Delete</button>
+                    </div>
+                </div>
+
+                <!-- Panel Controls & Summary -->
+                <div>
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="card-title">1. Control Panel — <span id="cp-sc-title">Scenario A</span></div>
+                        
+                        <div style="display:flex; gap:20px; margin-bottom: 25px;">
+                            <label style="font-weight:800; font-size: 14px; color:var(--dark-blue);">Select Package:</label>
+                            <div>
+                                <input type="radio" name="pkgType" id="pkg-buffet" value="buffet" checked onchange="changePackageType()"> <label for="pkg-buffet" style="font-size:14px; font-weight:700;">Buffet</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="pkgType" id="pkg-cb" value="cb" onchange="changePackageType()"> <label for="pkg-cb" style="font-size:14px; font-weight:700;">Coffee Break</label>
+                            </div>
+                        </div>
+
+                        <div class="cp-row">
+                            <div class="input-group">
+                                <label>Allocation (Input)</label>
+                                <input type="text" id="input-allocation" oninput="formatInput(this)" onchange="updateSim()" inputmode="numeric">
+                                <span class="input-hint" id="tier-hint">T4: Rp 185.000 - Rp 234.999 → Selling Price Rp 200.000</span>
+                            </div>
+                            <div class="input-group">
+                                <label>Total pax</label>
+                                <input type="text" id="input-pax" oninput="formatInput(this)" onchange="updateSim()" inputmode="numeric">
+                            </div>
+                            <div class="input-group">
+                                <label>Selling price / pax</label>
+                                <input type="text" id="input-selling" disabled>
+                                <span class="input-hint">Locked following price range.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 0;">
+                        <div class="card-title">Cost & Profit Margin Summary</div>
+                        <div class="summary-grid">
+                            <div class="stat-capsule"><span>Tier / Pkg</span><strong id="sum-tier">T4</strong></div>
+                            <div class="stat-capsule"><span>Menu Quota</span><strong id="sum-kuota">8</strong></div>
+                            <div class="stat-capsule"><span>Cost / pax</span><strong id="sum-cost-pax">Rp 0</strong></div>
+                            <div class="stat-capsule"><span>Total revenue</span><strong id="sum-rev">Rp 0</strong></div>
+                            <div class="stat-capsule"><span>Total food cost</span><strong id="sum-food-cost">Rp 0</strong></div>
+                            <div class="stat-capsule"><span>% cost</span><strong id="sum-pct-cost">0%</strong></div>
+                            <div class="stat-capsule"><span>Total profit</span><strong id="sum-tot-profit">Rp 0</strong></div>
+                            <div class="stat-capsule"><span>Profit / pax</span><strong id="sum-profit-pax">Rp 0</strong></div>
+                            <div class="stat-capsule"><span>% profit</span><strong id="sum-pct-profit">0%</strong></div>
+                            <div class="stat-capsule"><span>Status</span><strong id="sum-status">-</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Card for Menu Selection -->
+            <div class="table-card">
+                <div class="card-title" style="margin-bottom: 10px;">2. Menu Selection</div>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Category</th>
+                                <th>Cost/Item</th>
+                                <th>Qty</th>
+                                <th>Total/Pax</th>
+                                <th>Menu 1</th>
+                                <th>Menu 2</th>
+                                <th>Menu 3</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Dynamic Banner -->
+                <div class="banner-container banner-warning" id="menu-completion-banner">
+                    COMPLETE THE MENU
+                    <small>Category status is checked based on the number of Menu choices compared to Qty. Category with Qty 0 does not need to be filled.</small>
+                </div>
+
+                <!-- Desktop Actions -->
+                <div class="desktop-actions">
+                    <button class="btn-red" onclick="resetMenus()">⟲ Reset Selection</button>
+                    <button class="btn-light-blue" onclick="cetakStandard()">🖨 Print View</button>
+                    <button class="btn-primary" onclick="simpanTransaksi()">💾 Save This Scenario</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Bottom Bar for MOBILE ONLY -->
+        <div class="mobile-bottom-bar">
+            <button class="btn-mobile-secondary" onclick="openReportModal()">📑 Reports</button>
+            <button class="btn-mobile-secondary" onclick="cetakSuratTamu()">PDF to Guest</button>
+            <button class="btn-mobile-primary" onclick="simpanTransaksi()">💾 Save Event</button>
+        </div>
+
+        <!-- Surat Tamu Container (Hidden by default, shown only on print) -->
+        <div id="surat-tamu-container">
+            <div class="kop-surat">
+                <h1>PLATINUM HOTEL & CONVENTION HALL</h1>
+                <p>Jl. Soekarno Hatta No. 28, Balikpapan, East Kalimantan 76125 | Tel: (0542) 8800288</p>
+            </div>
+
+            <div class="surat-header">
+                <div class="tanggal-surat" id="surat-date">Balikpapan, October 14, 2026</div>
+                <p>To,</p>
+                <p class="tujuan" id="surat-booker">Mr/Mrs [Guest Name]</p>
+                <p id="surat-address">[Guest Address]</p>
+            </div>
+
+            <div class="surat-body">
+                <p>Dear Sir/Madam,</p>
+                <p>Thank you for trusting Platinum Hotel & Convention Hall Balikpapan as your event venue. Below are the details of the Banquet Package and the agreed menu selection:</p>
+
+                <table>
+                    <tr><td>Event Name</td><td>: <span id="surat-ev-name">-</span></td></tr>
+                    <tr><td>Event Date</td><td>: <span id="surat-ev-date">-</span></td></tr>
+                    <tr><td>Venue (Room)</td><td>: <span id="surat-ev-venue">-</span></td></tr>
+                </table>
+
+                <div class="menu-list-container" id="surat-menu-list">
+                    <!-- Menu items injected here -->
+                </div>
+            </div>
+
+            <div class="surat-footer">
+                <p>This concludes the details of your package. Should you have any adjustments or further questions, please do not hesitate to contact us.</p>
+                
+                <div class="ttd-box">
+                    <p>Sincerely,</p>
+                    <p class="nama" id="surat-sales">Sales Person</p>
+                    <p>Banquet Sales & Marketing</p>
+                    <p>Platinum Hotel Balikpapan</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL REPORT -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Banquet Transaction Data Report</h2>
+                <button class="btn-outline" style="color:var(--dark-blue); border-color:var(--border-color); padding: 8px 15px;" onclick="closeReportModal()">✕ Close</button>
+            </div>
+
+            <div class="report-summary">
+                <div class="rs-box"><span>Total Event Transactions</span><strong id="rep-total-trx">0</strong></div>
+                <div class="rs-box"><span>Total Revenue</span><strong id="rep-total-rev">Rp 0</strong></div>
+                <div class="rs-box"><span>Total Cost</span><strong id="rep-total-cost">Rp 0</strong></div>
+                <div class="rs-box"><span>Cost %</span><strong id="rep-avg-cost">0%</strong></div>
+                <div class="rs-box"><span>Total Profit</span><strong id="rep-total-profit">Rp 0</strong></div>
+            </div>
+
+            <div class="report-table-wrapper">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Event Date</th>
+                            <th>Event Name</th>
+                            <th>Booker</th>
+                            <th>WhatsApp</th>
+                            <th>BEO</th>
+                            <th>Segment</th>
+                            <th>Status</th>
+                            <th>Sales Person</th>
+                            <th>Venue / Room</th>
+                            <th>Total Pax</th>
+                            <th>Revenue</th>
+                            <th>Cost</th>
+                            <th>Cost %</th>
+                            <th>Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-table-body">
+                        <!-- Data injected via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-actions" style="margin-bottom: 20px;">
+                <button class="btn-light-blue" onclick="cetakStandard()">🖨 Print Report / PDF</button>
+                <button class="btn-primary" style="width:auto;" onclick="closeReportModal()">Close Report</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- DATABASE MENU ---
+    const menuDB = {
+        buffet: {
+            "Appetizer": ["Asinan Bogor", "Asinan Jakarta", "Fatoush Salad", "Fisherman Salad", "Fruit Salad", "Fruits Salad", "Gado Gado", "Glass Noodles Salad", "Gohu Salad", "Greek Salad", "Green Garden Salad", "Grill Chicken Salad", "Grill Vegetables Seafood Salad", "Hawaian Chicken Salad", "Hawaiian Salad", "Japanese Potato Salad", "Karedok", "Ketoprak", "Lalapan Segar Sambal Terasi", "Lawar Bali", "Lotek Bandung", "Macaroni Mayonaise", "Mix Salad Bar", "Oriental Chicken Salad", "Pasta Beef Salad", "Pecal Sayuran", "Penne With Pesto", "Potato  Salad", "Rujak Buah Campur", "Rujak Juhi", "Rujak Pengantin", "Salad Bar", "Sausage Salad", "Seafood Cocktail", "Selada Empek-Empek", "Selada Pengantin", "Sosis Solo Sauce Kacang", "Sweet Corn And Smoked Beef", "Tahu Gejrot", "Tahu Gimbal", "Tahu Goreng Medan", "Tahu Lengko", "Tahu Telur", "Tomato And Cheese", "Urapan Sayuran"], 
+            "Soup": ["Asparagus Crab Soup", "Asparagus Cream Soup", "Asparagus Dengan Ayam", "Asparagus Jagung", "Beef Brenebon Soup", "Beef Goulash Soup", "Broccoli Soup", "Chicken Cream Soup", "Corn & Chicken Soup", "Coto Makassar", "Cream Mushroom Soup", "Cream Pumpkin Soup", "Gazpacho Cold Soup", "Green Peas Cream Soup", "Ikan Tiucio", "Leek Potato Soup", "Minestrone Soup", "Miso Soup", "Mushroom Cream Soup", "Onion And Mushroom Soup", "Potato Cream Soup", "Pumpkin Cream Soup", "Seafood Bisque", "Seafood Bouillabiase Soup", "Seafood Chowder Soup", "Sop Ayam Sayur", "Sop Saudara", "Soto Ayam", "Soto Bandung", "Soto Betawi", "Soto Lamongan", "Soto Madura", "Soto Mie Bogor", "Soto Padang", "Soup Kimlo", "Soup Pallu Bassa", "Sup Asam Pedas", "Sup Ayam Herbal", "Sup Baso Pangsit", "Sup Bening Sosis Dan Baso", "Sup Jagung Ayam", "Sup Miso", "Sup Oyong Dan Jamur", "Sup Sosis Sayuran", "Sup Tahu Jamur", "Tofu & Seaweed Soup", "Tom Yam Ayam", "Tom Yam Seafood", "Tomato Cream Soup", "Tomato Soup", "Vegetarian Soup"], 
+            "Rice": ["Nasi Goreng Ayam", "Nasi Goreng Ikan Asin", "Nasi Goreng Kampung", "Nasi Goreng Kari", "Nasi Goreng Merah", "Nasi Goreng Oncom", "Nasi Goreng Sambal Hijau", "Nasi Goreng Sosis", "Nasi Goreng Vegetarian", "Nasi Goreng Yang Chow", "Nasi Kerabu", "Nasi Kuning", "Nasi Uduk", "Seafood Fried Rice", "Thai Pineapple Fried Rice", "Butter Rice", "Marinara Rice", "Mashed Potatto", "Paela Rice", "Potato Gratin", "Potato Lyonese", "Potato Wedges", "Potato:", "Roasted Potato"], 
+            "Side Dish": ["Bakwan Jagung", "Fuyung hai", "Jamur Goreng Crispy", "Kentang Balado", "Kentang Semur", "Orek Tempe Teri", "Sambal Goreng Hati", "Sosis Bakar", "Tahu Bacem", "Tahu Goreng Tepung", "Telur Balado", "Telur Semur", "Tempe Goreng Tepung", "Tofu salt pepper", "Tumis Sosis dan Baso"], 
+            "Noodle": ["Bie Hun Goreng", "Bie Hun Goreng Ayam", "Bie Hun Goreng Seafood", "Bihun Goreng Ayam", "Bihun Goreng Cabe Hijau", "Bihun Goreng Sosis", "Bihun Masak Kari", "I Fu Mie Vegetables", "Kwetiau Siram Sapi", "Kwie Tiaw Goreng Ayam", "Kwie Tiaw Goreng Sayuran", "Kwie Tiaw Goreng Seafood", "Malay Char Kwetiau", "Mie Goreng Ala Hongkong", "Mie Goreng Ayam", "Mie Goreng Ayam Sayuran", "Mie Goreng Daging", "Mie Goreng Jawa", "Mie Goreng Seafood", "Mie Goreng Singapore", "Mie Goreng Ulang Tahun", "Mie Titi Seafood", "Pad Thai Noodles", "Sohun Goreng Ayam", "Sohun Goreng Sayur", "Tami Special Ayam", "Tami Special Daging", "Tami Special Seafood", "Tang Hun Goreng", "Tang Hun Seafood", "Tofu & Seaweed Soup", "Tom Yam Ayam", "Tom Yam Seafood", "Vegetarian Fried Noodles", "Fettucine Mushroom", "Fettucine Napolitana", "Fetucini Agli Olio", "Fetucini Seafood", "Macaroni Carbonara", "Mixed Pasta", "Pasta Arrabiata", "Penne Aglio E Olio", "Penne Amatricina Sauce", "Penne De Pasto", "Penne Putanesca Sauce", "Spaghetti Aglio Olio", "Spaghetti Carbonara", "Spaghetti Marinara", "Spaghetty Arrabiatta Sauce", "Spaghetty Seafood  Marinanara", "Summer Spaghetty"], 
+            "Vegetable": ["Brokoli Bawang Putih", "Brokoli Dengan Ayam", "Brokoli Saos Tiram", "Buncis Bawang Putih", "Buncis Dengan Saos Tiram", "Cap Cay", "Cap Cay Sayuran", "Gudeg Khas Jogja", "Gulai Daun Singkong", "Gulai Nangka", "Kangkung Balacan", "Mapo Tofu", "Orak Arik Sayur Telor", "Orak Arik Sayuran", "Sapo Tofu Vegetables", "Sawi Daging Bawang Putih", "Sawi Daging Dengan Saos Tiram", "Sayur Acar Kuning", "Sayur Asem", "Sayur Lodeh", "String Bean Xo", "Terong Balado", "Tumis Aneka Jamur", "Tumis Buncis Dan Wortel", "Tumis Buncis Ebi", "Tumis Cuciwis", "Tumis Daun Pepaya & Teri", "Tumis Kacang Panjang Tempe Touge", "Tumis Kacang Panjang Teri", "Tumis Kailan Bawang Putih", "Tumis Labu Dan Wortel", "Tumis Pedas Labu Siam", "Tumis Pokcoy Dan Jamur", "Tumis Sawi Hijau & Putih", "Tumis Sayur  Campur", "Tumis Tauge Ikan Asin", "Carrot And Green Peas", "Cauly Flower Butered", "Frozen Mix Vegetable", "Garden Vegetabales", "Gratinated Aubergine And Zuccini", "Jardiniere  Vegetables", "Mix Grilled Vegetables", "Mix Vegetable Garlic", "Ratatouille Vegetables", "Vegetable Gratin", "Vegetable Napolitan", "Vichy Carrot", "Yellow Curry Vegtables"], 
+            "Chicken": ["Ayam Asam Manis", "Ayam Bakar Kecap", "Ayam Bakar Madu", "Ayam Betutu (Goreng / Kuah)", "Ayam Bumbu Bali", "Ayam Bumbu Rujak", "Ayam Geprek", "Ayam Goreng Bawang Putih", "Ayam Goreng Dabu-Dabu", "Ayam Goreng Kalasan", "Ayam Goreng Kremes", "Ayam Goreng Lengkuas", "Ayam Goreng Mentega", "Ayam Goreng Singkawang", "Ayam Goreng Telur Asin", "Ayam Goreng Terasi", "Ayam Goreng Wijen", "Ayam Gulai", "Ayam Kalio", "Ayam Kari", "Ayam Lada Hitam", "Ayam Lodho", "Ayam Masak Balado", "Ayam Masak Cabai Hijau", "Ayam Masak Gulai", "Ayam Masak Hunan", "Ayam Masak Kungpao", "Ayam Masak Opor", "Ayam Masak Rendang", "Ayam Masak Rica-Rica", "Ayam Masak Semur", "Ayam Masak Szechuan", "Ayam Mentega", "Ayam Panggang Bumbu Rujak", "Ayam Panggang Jogja", "Ayam Panggang Kecap", "Ayam Panggang Padang", "Ayam Panggang Taliwang", "Ayam Renyah Saos Bangkok", "Ayam Rica Rica", "Ayam Saos Inggris", "Ayam Saos Teriyaki", "Ayam Topallada", "Bbq Roast Chciken", "Chicken Ala King", "Chicken Black Pepper Sauce", "Chicken Cacciotore", "Chicken Casserole", "Chicken Fricasse", "Chicken Katsu", "Chicken Lemon Butter Sauce", "Chicken Milanese", "Chicken Mushroom Sauce", "Chicken Piccatta Milanese", "Chicken Potato Curry", "Chicken Teriyaki", "Fried Chicken", "Grill Chicken Herbs Gravy", "Kungpao Chicken", "Opor Ayam", "Pepes Ayam Kemangi", "Roasted Chicken", "Roasted Chiken Bbq Sauce", "Roasted Chiken Mushroom Sauce", "Roasted Chiken Rosmary", "Strips Herbs Chicken", "Tongseng Ayam", "WESTERN"], 
+            "Fish": ["Fish Lemon Butter", "Fish Lemon Butter Sauce", "Fish Mushroom Sauce", "Fish Orange Beurre Sauce", "Fish Pineapple Coriander Sauce", "Fish Tartar", "Fish Tomato Basil Sauce", "Fish Tomato Salsa", "Fried Fish Black Pepper", "Fried Fish Creamy Sauce", "Fried Fish Mayo Sauce", "Fried Fish Tartar", "Fried Fish Thai Sauce", "Grill Fish Capers And Butter", "Grill Fish Garlic Butter", "Ikan  Saos Lemon", "Ikan Acar Kuning", "Ikan Asam Manis", "Ikan Asem Pedas", "Ikan Asin Tarakan", "Ikan Bakar Colo-Colo", "Ikan Bakar Dabu-Dabu", "Ikan Bumbu Bali", "Ikan Bumbu Kari", "Ikan Bumbu Pesmol", "Ikan Bumbu Rujak", "Ikan Dabu Dabu", "Ikan Dori Relur Asin", "Ikan Goreng Ala Thai", "Ikan Goreng Balado", "Ikan Goreng Mentega", "Ikan Goreng Rica-Rica", "Ikan Goreng Sambal Asap", "Ikan Goreng Saos Malaysia", "Ikan Goreng Saos Mangga", "Ikan Goreng Sauce Acar Kuning", "Ikan Goreng Szechuan", "Ikan Gulai", "Ikan Lempah Kuning", "Ikan Masak Bumbu Pesmol", "Ikan Masak Habang", "Ikan Masak Kemangi", "Ikan Masak Szechuan", "Ikan Masak Tausi", "Ikan Panggang Padang", "Ikan Parappe", "Ikan Pepes Kemagi", "Ikan Rica-Rica", "Ikan Sambal Matah", "Ikan Saos Bangkok", "Ikan Saos Mentega", "Ikan Saos Plum", "Ikan Saos Taucho", "Ikan Sauce Teriyaki", "Ikan Saus Lemon Sauce", "Pepes Ikan", "Steam Fish", "Gulai Asam Pedas"], 
+            "Beef": ["Balado Sapi", "Beef  Rollade", "Beef  With Mushroom Sauce", "Beef Black Pepper", "Beef Black Pepper Cream", "Beef Black Pepper Paprika", "Beef Kare", "Beef Milanese", "Beef Oyster Mushroom", "Beef Piccatta", "Beef Stew Irish", "Beef Stew Potato", "Beef Storganoff", "Beef Strawberry", "Beef Stroganof", "Beef Teriyaki", "Braissed Beef With Onion", "Daging Asam Pedas", "Daging Bumbu Rujak", "Daging Cabai Hijau", "Daging Empal", "Daging Masak Balado", "Daging Masak Gulai", "Daging Masak Kalio", "Daging Masak Semur Bali", "Daging Masak Tongseng", "Daging Masak Topallada", "Daging Rendang Kentang", "Daging Sapi Ala Malaka", "Daging Sapi Ala Platinum", "Daging Sapi Cabe Kering", "Daging Sapi Kungpao", "Daging Sapi Lada Hitam", "Daging Sapi Saicap", "Gulai Sapi", "Hunggarian Beef Goulash", "Krengsengan", "Osek Daging", "Oseng Oseng Daging", "Rendang Sapi", "Rica Rica Sapi", "Roasted Beef Rosemary", "Roasted Beef With Gravy", "Sapi Empal Gepuk", "Semur Daging", "Tongseng Sapi", "Tumis Daging Cabe Hijau"], 
+            "Stall": ["Bakso Malang", "Soto Banjar", "Zuppa Soup", "Soto Ayam", "Sate Ayam", "Dimsum Assorted", "Siomay Bandung", "Batagor", "Bakso", "Mie Ayam", "Martabak"], 
+            "Dessert": ["Almond Cake", "Apple Pie", "Apple Strudel", "Asian Cheese Cake", "Assorted Slice Fruits", "Avocado Mousse", "Banana Cake", "Cantik Manis", "Carrot Cake", "Chocolate Cake", "Chocolate Mouse", "Chocolate Pie", "Cotton Cake", "Coux Vanilla", "Es Buah", "Es Buah Susu Selasi", "Es Campur", "Es Cendol", "Es Cincau", "Es Dawet", "Es Goyobot", "Es Kelapa Muda", "Es Kolak Dingin", "Es Kuwut / Es Melon", "Es Longan Tofu", "Es Mangga", "Es Nata De Coco", "Es Putar", "Es Shanghai", "Es Teller", "Es Timun Selasih", "Green Tea Cake", "Katiri Sala", "Klepon", "Kue Lumpur", "Marble Cake", "Marble cake", "Mille Fiule", "Mini Black Forest", "Mini Cheese Cake", "Mini Tartlet", "Ongol Ongol", "Opera Cake", "Pandan Cake", "Pineapple Strudel", "Pudding Blubery", "Pudding Buah", "Pudding Caramel", "Pudding Chocolate", "Pudding Gula Merah", "Pudding Kelapa Muda", "Pudding Nagka", "Pudding Pandan", "Pudding Pelangi", "Pudding Roti", "Pudding Strawberry", "Pudding Vanilla", "Red Velvet", "Roll Cake  Mocca", "Roll Cake Strawberry", "Strawberry Cake", "Strawberry Cheese Cake", "Strawberry Pie", "Sultana Cake", "Tape Cheese Cake", "Tiramisu Cake", "Vanilla Cake", "Zebra Cake", "Éclair"]
+        },
+        cb: {
+            "SAVORY": ["Bakpao Ayam", "Bakpao Kacang Merah", "Bakpao Kacang Tanah", "Bola Udang Keju", "Cakue Udang Goreng", "Chicken & Mushroom Puff", "Chicken Croquet", "Chicken Siomay", "Chicken Spring Roll", "Chicken Sushi Roll", "Chicken nugget", "Duck Spring Roll", "Kumis Naga", "Lemper Ayam", "Lumpia Udang Goreng Kulit Tahu", "Martabak Telur", "Money Bag", "Okado", "Onde Onde", "Pastel", "Perkedel kentang keju", "Quiche lorents", "Risoles Mayo", "Roti Abon", "Roti sosis", "Samosa Vegetable", "Semarang Spring Roll", "Siomay Ayam", "Siomay Udang", "Sosis Solo", "Steamed Siomay", "Tahu Goreng Tepung", "Tahu Isi", "Tahu Walek", "Tempe Mendoan", "Thai Chicken Spring Roll", "Tim Kaki Ayam", "Tim Lumpia Kulit Tahu", "Tim Tahu Udang", "Vegetable Spring Roll", "Vietname Spring Roll", "Wonton Goreng", "Wotie", "Wotiek", "Xiao Long Pao", "semar mendem", "sosis puff"], 
+            "SWEET": ["Almond Cake", "Amparan Tatak", "Apple Pie", "Apple Strudel", "Banana Cake", "Bika Ambon", "Brownies", "Cantik Manis", "Chocolate Pie", "Dadar Gulung", "Fruit Tartlet", "Getuk Lindri", "Ketan Abon", "Ketan Srikaya", "Klepon", "Klepon Cake", "Kue Ku", "Kue Kucur", "Kue Lapis Beras", "Lapis Surabaya", "Lumpur Surga", "Marble cake", "Mille Fiule", "Mini Black Forest", "Mini Cheese Cake", "Misro", "Nagasari", "Onde2", "Pandan Srikaya", "Pie Buah", "Pineapple Strudel", "Pisang Goreng", "Pukis", "Putri Selat", "Putu Ayu", "Red Velvet", "Roti Pisang", "Sarang Semut", "Sifone Cake", "Strawberry Cheese Cake", "Strawberry Pie", "Sus Buah", "Sus Vla", "Talam Pandan", "Talam Ubi", "Wajik Ketan"], 
+            "CHIIPS": ["Amplang", "Beng beng", "Kacang Atom", "Kacang Bawang", "Kacang Kapri", "Kacang Telor", "Keripik Pisang", "Keripik Singkong", "Keripik Tempe", "Keripik Ubi", "Pop Corn", "Stick Balado", "Wafer", "kacang koro", "keripik pisang", "keripik tortilla", "super star"], 
+            "STALL": ["Batagor", "Chicken Wrap", "Crepes suzette", "Dadar Gulung", "Empek - Empek", "Kue lumpur", "Martabak Asin", "Martabak Manis", "Pukis", "Serabi", "Tempura", "Tempura vegetables"], 
+            "JUICES": ["Guava", "Mango", "Orange"], 
+            "TEA": ["Tea", "Jasmine", "Earl Grey"], 
+            "COFFEE": ["Coffee", "Espresso", "Americano"], 
+            "COFFEE CUP": ["Coffee Cups"], 
+            "OTHER HOT DRINK": ["Jahe", "Secang", "Tea Jahe"]
+        }
+    };
+
+    const categoriesBuffet = [
+        { id: 'Appetizer', cost: 5000 }, { id: 'Soup', cost: 6000 }, { id: 'Rice', cost: 3000 }, 
+        { id: 'Side Dish', cost: 5000 }, { id: 'Noodle', cost: 6000 }, { id: 'Vegetable', cost: 5000 }, 
+        { id: 'Chicken', cost: 7000 }, { id: 'Fish', cost: 9000 }, { id: 'Beef', cost: 13000 }, 
+        { id: 'Stall', cost: 10000 }, { id: 'Dessert 1', cost: 5000 }, { id: 'Dessert 2', cost: 5000 }
+    ];
+    
+    const getCBRules = (alloc) => {
+        if(alloc >= 150000) return { tier: 'T1', round: 150000, qty: { SAVORY:3, SWEET:2, CHIIPS:1, STALL:1, JUICES:1, TEA:1, COFFEE:1, 'COFFEE CUP':1, 'OTHER HOT DRINK':1 } };
+        if(alloc >= 125000) return { tier: 'T2', round: 125000, qty: { SAVORY:2, SWEET:2, CHIIPS:1, STALL:1, JUICES:1, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        if(alloc >= 100000) return { tier: 'T3', round: 100000, qty: { SAVORY:2, SWEET:2, CHIIPS:1, STALL:1, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        if(alloc >= 75000) return { tier: 'T4', round: 75000, qty: { SAVORY:2, SWEET:1, CHIIPS:1, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        if(alloc >= 50000) return { tier: 'T5', round: 50000, qty: { SAVORY:1, SWEET:1, CHIIPS:1, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        return { tier: 'T6', round: 35000, qty: { SAVORY:0, SWEET:0, CHIIPS:0, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+    };
+
+    const categoriesCB = [
+        { id: 'SAVORY', cost: 5000 }, { id: 'SWEET', cost: 5000 }, { id: 'CHIIPS', cost: 3000 }, 
+        { id: 'STALL', cost: 5000 }, { id: 'JUICES', cost: 5000 }, { id: 'TEA', cost: 3000 }, 
+        { id: 'COFFEE', cost: 3000 }, { id: 'COFFEE CUP', cost: 8000 }, { id: 'OTHER HOT DRINK', cost: 5000 }
+    ];
+
+    const roundingRulesBuffet = [
+        { tier: 'T1', min: 285000, max: 9999999, round: 300000, qty: { Appetizer:1, Soup:1, Rice:1, 'Side Dish':1, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:1, Stall:2, 'Dessert 1':1, 'Dessert 2':1 } },
+        { tier: 'T2', min: 260000, max: 284999, round: 275000, qty: { Appetizer:1, Soup:1, Rice:1, 'Side Dish':0, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:1, Stall:1, 'Dessert 1':1, 'Dessert 2':1 } },
+        { tier: 'T3', min: 235000, max: 259999, round: 250000, qty: { Appetizer:0, Soup:1, Rice:1, 'Side Dish':0, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:1, Stall:1, 'Dessert 1':1, 'Dessert 2':1 } },
+        { tier: 'T4', min: 185000, max: 234999, round: 200000, qty: { Appetizer:1, Soup:1, Rice:1, 'Side Dish':0, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:0, Stall:0, 'Dessert 1':1, 'Dessert 2':0 } },
+        { tier: 'T5', min: 160000, max: 184999, round: 175000, qty: { Appetizer:0, Soup:1, Rice:1, 'Side Dish':1, Noodle:0, Vegetable:1, Chicken:1, Fish:1, Beef:0, Stall:0, 'Dessert 1':1, 'Dessert 2':0 } },
+        { tier: 'T6', min: 0,      max: 159999, round: 150000, qty: { Appetizer:0, Soup:0, Rice:0, 'Side Dish':0, Noodle:0, Vegetable:0, Chicken:0, Fish:0, Beef:0, Stall:0, 'Dessert 1':0, 'Dessert 2':0 } }
+    ];
+
+    // --- STATE MANAGEMENT ---
+    let scenarios = [
+        { id: 1, name: 'Scenario A', mode: 'buffet', allocation: 200000, pax: 50, currentTierLabel: 'T4', totalCost: 0, sellingPrice: 0, revenue: 0, profit: 0, costPct: 0, selections: {} }
+    ];
+    let activeScenarioId = 1;
+    let scenarioCounter = 1;
+    let transactionHistory = []; 
+    let isDashboardView = false;
+
+    // Format Helpers
+    const formatRp = (num) => 'Rp ' + new Intl.NumberFormat('id-ID').format(num);
+    const parseNumber = (str) => parseInt(str.toString().replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
+
+    function formatInput(el) {
+        let val = parseNumber(el.value);
+        if(val === 0 && el.value === "") { el.value = ""; return; }
+        el.value = new Intl.NumberFormat('id-ID').format(val);
+    }
+
+    // --- UI RENDERING ---
+    function renderTabs() {
+        const container = document.getElementById('scenario-tabs');
+        container.innerHTML = '';
+        
+        scenarios.forEach(sc => {
+            const btn = document.createElement('button');
+            btn.className = `sc-tab ${sc.id === activeScenarioId && !isDashboardView ? 'active' : ''}`;
+            btn.innerText = sc.name;
+            btn.onclick = () => { isDashboardView = false; switchScenario(sc.id); toggleDashboard(false); };
+            container.appendChild(btn);
+        });
+
+        const dbBtn = document.createElement('button');
+        dbBtn.className = `sc-tab ${isDashboardView ? 'active' : ''}`;
+        dbBtn.style.background = isDashboardView ? 'var(--dark-blue)' : '#e2e8f0';
+        dbBtn.style.color = isDashboardView ? 'white' : 'var(--text-muted)';
+        dbBtn.innerHTML = '📊 Overall Event Dashboard';
+        dbBtn.onclick = () => { isDashboardView = true; renderTabs(); toggleDashboard(true); };
+        container.appendChild(dbBtn);
+    }
+
+    function toggleDashboard(show) {
+        if(show) {
+            document.getElementById('simulator-view').style.display = 'none';
+            document.getElementById('dashboard-view').style.display = 'block';
+            renderDashboard();
+        } else {
+            document.getElementById('simulator-view').style.display = 'block';
+            document.getElementById('dashboard-view').style.display = 'none';
+        }
+    }
+
+    function renderDashboard() {
+        let grandPax = 0, grandRev = 0, grandCost = 0, grandProfit = 0;
+        let tbody = document.getElementById('db-table-body');
+        tbody.innerHTML = '';
+        
+        let menuCount = {}; 
+
+        scenarios.forEach(sc => {
+            grandPax += sc.pax;
+            grandRev += sc.revenue;
+            grandCost += sc.totalCost;
+            grandProfit += sc.profit;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td style="font-weight:700;">${sc.name}</td>
+                    <td><span style="background:#e2e8f0; padding:4px 8px; border-radius:12px; font-weight:700; font-size:11px;">${sc.mode === 'buffet' ? 'Buffet '+sc.currentTierLabel : 'Coffee Break '+sc.currentTierLabel}</span></td>
+                    <td>${sc.pax}</td>
+                    <td>${formatRp(sc.sellingPrice)}</td>
+                    <td>${formatRp(sc.revenue)}</td>
+                    <td style="color:var(--primary-blue); font-weight:700;">${formatRp(sc.profit)}</td>
+                </tr>
+            `;
+
+            if(sc.selections) {
+                for (const [cat, items] of Object.entries(sc.selections)) {
+                    if (!menuCount[cat]) menuCount[cat] = {};
+                    items.forEach(item => {
+                        if (item && item !== "—") {
+                            menuCount[cat][item] = (menuCount[cat][item] || 0) + sc.pax; 
+                        }
+                    });
+                }
+            }
+        });
+
+        document.getElementById('db-tot-pax').innerText = grandPax + ' Pax';
+        document.getElementById('db-tot-rev').innerText = formatRp(grandRev);
+        document.getElementById('db-tot-cost').innerText = formatRp(grandCost);
+        document.getElementById('db-tot-profit').innerText = formatRp(grandProfit);
+
+        let meHtml = '';
+        for (const [cat, items] of Object.entries(menuCount)) {
+            if(Object.keys(items).length > 0) {
+                meHtml += `<div style="background:#f8fafc; padding:15px; border-radius:12px; border:1px solid var(--border-color);">`;
+                meHtml += `<h4 style="color:var(--dark-blue); margin-bottom:10px; border-bottom:1px solid #e2e8f0; padding-bottom:5px;">Category: ${cat}</h4>`;
+                meHtml += `<ul style="list-style:none; font-size:13px; line-height:1.8;">`;
+                for (const [itemName, qty] of Object.entries(items)) {
+                    meHtml += `<li style="display:flex; justify-content:space-between; border-bottom:1px dashed #e2e8f0; padding:4px 0;"><span>${itemName}</span> <strong style="color:var(--primary-blue);">${qty} Portions</strong></li>`;
+                }
+                meHtml += `</ul></div>`;
+            }
+        }
+        
+        if(meHtml === '') {
+            meHtml = '<p style="font-size:13px; color:var(--text-muted); grid-column: 1 / -1; padding:20px; text-align:center; background:#f8fafc; border-radius:12px;">No menu selected from any scenario yet.</p>';
+        }
+        document.getElementById('db-menu-engineering').innerHTML = meHtml;
+    }
+
+    function switchScenario(id) {
+        activeScenarioId = id;
+        renderTabs();
+        loadActiveScenario();
+    }
+
+    function tambahSkenario() {
+        scenarioCounter++;
+        const newSc = {
+            id: scenarioCounter,
+            name: `Scenario ${String.fromCharCode(64 + scenarioCounter)}`,
+            mode: 'buffet',
+            allocation: 200000,
+            pax: 50,
+            currentTierLabel: 'T4',
+            totalCost: 0, sellingPrice:0, revenue: 0, profit: 0, costPct: 0,
+            selections: {}
+        };
+        scenarios.push(newSc);
+        isDashboardView = false;
+        toggleDashboard(false);
+        switchScenario(newSc.id);
+    }
+
+    function hapusSkenario() {
+        if(scenarios.length <= 1) {
+            alert('Minimum 1 scenario required!');
+            return;
+        }
+        scenarios = scenarios.filter(s => s.id !== activeScenarioId);
+        switchScenario(scenarios[0].id);
+    }
+
+    function loadActiveScenario() {
+        const active = scenarios.find(s => s.id === activeScenarioId);
+        document.getElementById('sc-title-display').innerText = active.name;
+        document.getElementById('cp-sc-title').innerText = active.name;
+        
+        document.getElementById('input-allocation').value = new Intl.NumberFormat('id-ID').format(active.allocation);
+        document.getElementById('input-pax').value = new Intl.NumberFormat('id-ID').format(active.pax);
+        
+        if (active.mode === 'buffet') {
+            document.getElementById('pkg-buffet').checked = true;
+            document.getElementById('tier-hint').style.display = 'block';
+        } else {
+            document.getElementById('pkg-cb').checked = true;
+            document.getElementById('tier-hint').style.display = 'block'; 
+        }
+        
+        updateSim();
+    }
+
+    function changePackageType() {
+        const active = scenarios.find(s => s.id === activeScenarioId);
+        active.mode = document.getElementById('pkg-buffet').checked ? 'buffet' : 'cb';
+        
+        if (active.mode === 'buffet') {
+            active.allocation = 200000;
+            document.getElementById('tier-hint').style.display = 'block';
+        } else {
+            active.allocation = 50000;
+            document.getElementById('tier-hint').style.display = 'block';
+        }
+        
+        active.selections = {}; 
+        document.getElementById('input-allocation').value = new Intl.NumberFormat('id-ID').format(active.allocation);
+        updateSim();
+    }
+
+    function generateSelect(catId, cellIndex, qtyLimit, mode, activeScenario) {
+        if (cellIndex > qtyLimit) {
+            return `<select class="menu-select" disabled><option>—</option></select>`;
+        }
+        
+        let dbCategory = (catId === 'Dessert 1' || catId === 'Dessert 2') ? 'Dessert' : catId;
+        const optionsData = menuDB[mode][dbCategory] || [];
+        
+        let savedValue = "";
+        if (activeScenario && activeScenario.selections && activeScenario.selections[catId]) {
+            savedValue = activeScenario.selections[catId][cellIndex - 1] || "";
+        }
+
+        let optsHTML = `<option value="">— Select Menu —</option>`;
+        optionsData.forEach(opt => {
+            let isSelected = (opt === savedValue) ? "selected" : "";
+            optsHTML += `<option value="${opt}" ${isSelected}>${opt}</option>`;
+        });
+        
+        return `<select class="menu-select" onchange="updateRowStatus(this)">${optsHTML}</select>`;
+    }
+
+    function updateSim() {
+        const active = scenarios.find(s => s.id === activeScenarioId);
+        
+        active.allocation = parseNumber(document.getElementById('input-allocation').value);
+        active.pax = parseNumber(document.getElementById('input-pax').value);
+        if(active.pax < 1) active.pax = 1;
+        
+        let sellingPrice = 0;
+        let tableHTML = '';
+        let totalCostPerPax = 0;
+        let totalQty = 0;
+        let tierLabel = '';
+
+        if (active.mode === 'buffet') {
+            let currentTier = roundingRulesBuffet.find(r => active.allocation >= r.min && active.allocation <= r.max) || roundingRulesBuffet[0];
+            sellingPrice = currentTier.round;
+            tierLabel = currentTier.tier;
+            
+            document.getElementById('input-selling').value = new Intl.NumberFormat('id-ID').format(sellingPrice);
+            document.getElementById('tier-hint').innerText = `${currentTier.tier}: Rp ${new Intl.NumberFormat('id-ID').format(currentTier.min)} - Rp ${new Intl.NumberFormat('id-ID').format(currentTier.max)} → Selling Price Rp ${new Intl.NumberFormat('id-ID').format(currentTier.round)}`;
+
+            categoriesBuffet.forEach((cat, index) => {
+                let qty = currentTier.qty[cat.id];
+                let rowCost = cat.cost * qty;
+                totalCostPerPax += rowCost;
+                totalQty += qty;
+                tableHTML += buildRow(index+1, cat.id, cat.cost, qty, rowCost, 'buffet', active);
+            });
+        } else {
+            let currentTier = getCBRules(active.allocation);
+            sellingPrice = currentTier.round;
+            tierLabel = currentTier.tier;
+
+            document.getElementById('input-selling').value = new Intl.NumberFormat('id-ID').format(sellingPrice);
+            document.getElementById('tier-hint').innerText = `CB ${currentTier.tier} → Selling Price Rp ${new Intl.NumberFormat('id-ID').format(currentTier.round)}`;
+
+            categoriesCB.forEach((cat, index) => {
+                let qty = currentTier.qty[cat.id];
+                let rowCost = cat.cost * qty;
+                totalCostPerPax += rowCost;
+                totalQty += qty;
+                tableHTML += buildRow(index+1, cat.id, cat.cost, qty, rowCost, 'cb', active);
+            });
+        }
+
+        tableHTML += `
+            <tr style="background:#f1f5f9; font-weight:700;">
+                <td data-label="" colspan="3">TOTAL COST</td>
+                <td data-label="Total Qty" align="center">${totalQty}</td>
+                <td data-label="Total Cost/Pax">${formatRp(totalCostPerPax)}</td>
+                <td colspan="4" style="text-align:right; font-size:14px;">Menu Selected: <span id="menu-counter">0</span> out of ${totalQty}</td>
+            </tr>
+        `;
+
+        document.getElementById('table-body').innerHTML = tableHTML;
+        
+        active.currentTierLabel = tierLabel;
+        active.sellingPrice = sellingPrice;
+        updateSummaryStats(active, sellingPrice, totalCostPerPax, totalQty);
+        
+        document.querySelectorAll('#table-body select:not([disabled])').forEach(s => updateRowStatus(s, true));
+    }
+
+    function buildRow(num, catId, cost, qty, rowCost, mode, activeScenario) {
+        return `
+            <tr>
+                <td data-label="No">${num}</td>
+                <td data-label="Category" style="font-weight:700; color:var(--primary-blue); font-size:15px;">${catId}</td>
+                <td data-label="Cost/Item">${formatRp(cost)}</td>
+                <td data-label="Qty" class="col-qty"><input type="number" value="${qty}" readonly></td>
+                <td data-label="Total/Pax" style="font-weight:700;">${qty === 0 ? 'Rp 0' : formatRp(rowCost)}</td>
+                <td data-label="Menu 1">${generateSelect(catId, 1, qty, mode, activeScenario)}</td>
+                <td data-label="Menu 2">${generateSelect(catId, 2, qty, mode, activeScenario)}</td>
+                <td data-label="Menu 3">${generateSelect(catId, 3, qty, mode, activeScenario)}</td>
+                <td data-label="Status"><span class="status-badge ${qty === 0 ? 'badge-sesuai' : 'badge-lengkapi'}">${qty === 0 ? 'Complete' : 'Incomplete'}</span></td>
+            </tr>
+        `;
+    }
+
+    function saveSelections() {
+        const active = scenarios.find(s => s.id === activeScenarioId);
+        if(!active.selections) active.selections = {};
+        
+        document.querySelectorAll('#table-body tr').forEach(tr => {
+            const catCell = tr.querySelector('td:nth-child(2)');
+            if(catCell && catCell.innerText !== "TOTAL COST") {
+                const catId = catCell.innerText;
+                const selects = tr.querySelectorAll('select:not([disabled])');
+                let vals = [];
+                selects.forEach(s => vals.push(s.value));
+                active.selections[catId] = vals;
+            }
+        });
+    }
+
+    function updateRowStatus(selectEl, skipCounter = false) {
+        if(!skipCounter) saveSelections(); 
+
+        const tr = selectEl.closest('tr');
+        const qtyInput = tr.querySelector('.col-qty input');
+        if(!qtyInput) return; 
+        
+        const qty = parseInt(qtyInput.value);
+        const badge = tr.querySelector('.status-badge');
+        
+        if (qty === 0) {
+            badge.className = 'status-badge badge-sesuai'; badge.innerText = 'Complete';
+            return;
+        }
+
+        let filled = 0;
+        tr.querySelectorAll('select:not([disabled])').forEach(s => { if(s.value.trim() !== "" && s.value !== "—") filled++; });
+        
+        if (filled >= qty) {
+            badge.className = 'status-badge badge-sesuai'; badge.innerText = 'Complete';
+        } else {
+            badge.className = 'status-badge badge-lengkapi'; badge.innerText = 'Incomplete';
+        }
+
+        if(!skipCounter) countTotalSelected();
+    }
+
+    function countTotalSelected() {
+        let totalSelected = 0;
+        document.querySelectorAll('#table-body select:not([disabled])').forEach(s => {
+            if(s.value.trim() !== "" && s.value !== "—") totalSelected++;
+        });
+        
+        let totalQty = 0;
+        document.querySelectorAll('.col-qty input').forEach(inp => totalQty += parseInt(inp.value));
+        
+        const counterEl = document.getElementById('menu-counter');
+        if(counterEl) counterEl.innerText = totalSelected;
+        document.getElementById('sc-menu-status').innerText = `Menu ${totalSelected}/${totalQty}`;
+
+        const banner = document.getElementById('menu-completion-banner');
+        if(banner) {
+            if(totalQty > 0 && totalSelected >= totalQty) {
+                banner.className = 'banner-container banner-success';
+                banner.innerHTML = 'MENU IS COMPLETE <small>All menu selections for this scenario meet the quota.</small>';
+            } else {
+                banner.className = 'banner-container banner-warning';
+                banner.innerHTML = 'COMPLETE THE MENU <small>Category status is checked based on the number of Menu choices compared to Qty. Category with Qty 0 does not need to be filled.</small>';
+            }
+        }
+    }
+
+    function updateSummaryStats(active, sellingPrice, totalCostPerPax, totalQty) {
+        let revenue = sellingPrice * active.pax;
+        let foodCost = totalCostPerPax * active.pax;
+        let profitPerPax = sellingPrice - totalCostPerPax;
+        let totalProfit = revenue - foodCost;
+        let pctProfit = revenue > 0 ? (totalProfit / revenue) * 100 : 0;
+        let pctCost = revenue > 0 ? (foodCost / revenue) * 100 : 0;
+
+        active.totalCost = foodCost;
+        active.revenue = revenue;
+        active.profit = totalProfit;
+        active.costPct = pctCost;
+
+        document.getElementById('tier-badge-top').innerText = active.mode === 'cb' ? 'CB' : active.currentTierLabel;
+        document.getElementById('sc-alokasi').innerText = formatRp(active.allocation);
+        document.getElementById('sc-harga').innerText = formatRp(sellingPrice);
+        document.getElementById('sc-pax').innerText = new Intl.NumberFormat('id-ID').format(active.pax);
+        document.getElementById('sc-cost').innerText = formatRp(totalCostPerPax);
+        document.getElementById('sc-rev').innerText = formatRp(revenue);
+        document.getElementById('sc-profit').innerText = formatRp(totalProfit);
+
+        document.getElementById('sum-tier').innerText = active.mode === 'cb' ? 'CB ' + active.currentTierLabel : active.currentTierLabel;
+        document.getElementById('sum-kuota').innerText = totalQty;
+        document.getElementById('sum-cost-pax').innerText = formatRp(totalCostPerPax);
+        document.getElementById('sum-rev').innerText = formatRp(revenue);
+        document.getElementById('sum-food-cost').innerText = formatRp(foodCost);
+        document.getElementById('sum-pct-cost').innerText = pctCost.toFixed(1) + '%';
+        document.getElementById('sum-tot-profit').innerText = formatRp(totalProfit);
+        document.getElementById('sum-profit-pax').innerText = formatRp(profitPerPax);
+        document.getElementById('sum-pct-profit').innerText = pctProfit.toFixed(1) + '%';
+        document.getElementById('sum-status').innerText = pctProfit >= 65 ? 'High' : pctProfit >= 50 ? 'Medium' : 'Low';
+        
+        countTotalSelected();
+    }
+
+    function resetMenus() {
+        document.querySelectorAll('#table-body select:not([disabled])').forEach(s => { s.value = ''; });
+        document.querySelectorAll('#table-body select:not([disabled])').forEach(s => updateRowStatus(s, true));
+        saveSelections();
+        countTotalSelected();
+    }
+
+    // --- TRANSACTION SAVING & REPORTING ---
+    function simpanTransaksi() {
+        const evName = document.getElementById('ev-name').value || 'Unnamed Event';
+        const evBooker = document.getElementById('ev-booker').value || '-';
+        const evAddress = document.getElementById('ev-address').value || '-';
+        const evWa = document.getElementById('ev-wa').value || '-';
+        const evBeo = document.getElementById('ev-beo').value || '-';
+        const evSegment = document.getElementById('ev-segment').value || '-';
+        const evStatus = document.getElementById('ev-status').value || '-';
+        const evSales = document.getElementById('ev-sales').value || '-';
+        const evVenue = document.getElementById('ev-venue').value || '-';
+        const evDateInput = document.getElementById('ev-date').value;
+        
+        let dateStr = "-";
+        if(evDateInput) {
+            const d = new Date(evDateInput);
+            dateStr = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        let eventPax = 0;
+        let eventRevenue = 0;
+        let eventCost = 0;
+        let eventProfit = 0;
+
+        scenarios.forEach(sc => {
+            eventPax += sc.pax;
+            eventRevenue += sc.revenue;
+            eventCost += sc.totalCost;
+            eventProfit += sc.profit;
+        });
+
+        let eventCostPct = eventRevenue > 0 ? (eventCost / eventRevenue) * 100 : 0;
+
+        transactionHistory.push({
+            date: dateStr,
+            name: evName,
+            booker: evBooker,
+            wa: evWa,
+            beo: evBeo,
+            segment: evSegment,
+            status: evStatus,
+            sales: evSales,
+            venue: evVenue,
+            pax: eventPax,
+            revenue: eventRevenue,
+            cost: eventCost,
+            costPct: eventCostPct,
+            profit: eventProfit,
+            scenariosCount: scenarios.length
+        });
+
+        alert(`Event Data "${evName}" (Total ${scenarios.length} Scenarios) saved successfully!`);
+    }
+
+    function openReportModal() {
+        document.getElementById('reportModal').style.display = 'flex';
+        renderReportTable();
+    }
+
+    function closeReportModal() {
+        document.getElementById('reportModal').style.display = 'none';
+    }
+
+    function renderReportTable() {
+        let tbody = document.getElementById('report-table-body');
+        tbody.innerHTML = '';
+        
+        let tRev = 0, tCost = 0, tProfit = 0;
+
+        transactionHistory.forEach(trx => {
+            tRev += trx.revenue;
+            tCost += trx.cost;
+            tProfit += trx.profit;
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td>${trx.date}</td>
+                    <td style="font-weight:700;">${trx.name}</td>
+                    <td>${trx.booker}</td>
+                    <td>${trx.wa}</td>
+                    <td>${trx.beo}</td>
+                    <td>${trx.segment}</td>
+                    <td><span style="background:#e2e8f0; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:700;">${trx.status}</span></td>
+                    <td>${trx.sales}</td>
+                    <td>${trx.venue}</td>
+                    <td>${trx.pax}</td>
+                    <td>${formatRp(trx.revenue)}</td>
+                    <td>${formatRp(trx.cost)}</td>
+                    <td>${trx.costPct.toFixed(1)}%</td>
+                    <td style="color:var(--primary-blue); font-weight:700;">${formatRp(trx.profit)}</td>
+                </tr>
+            `;
+        });
+
+        let avgCostPct = tRev > 0 ? (tCost / tRev) * 100 : 0;
+
+        document.getElementById('rep-total-trx').innerText = transactionHistory.length;
+        document.getElementById('rep-total-rev').innerText = formatRp(tRev);
+        document.getElementById('rep-total-cost').innerText = formatRp(tCost);
+        document.getElementById('rep-avg-cost').innerText = avgCostPct.toFixed(1) + '%';
+        document.getElementById('rep-total-profit').innerText = formatRp(tProfit);
+    }
+
+    // --- PRINTING FUNCTIONS ---
+    function cetakStandard() {
+        document.body.classList.remove('print-surat-tamu');
+        window.print();
+    }
+
+    function cetakSuratTamu() {
+        const evName = document.getElementById('ev-name').value || '-';
+        const evBooker = document.getElementById('ev-booker').value || 'Sir/Madam';
+        const evAddress = document.getElementById('ev-address').value || '';
+        const evDate = document.getElementById('ev-date').value;
+        const evVenue = document.getElementById('ev-venue').value || '-';
+        const evSales = document.getElementById('ev-sales').value || 'Sales Person';
+        
+        let dateStrEvent = '-';
+        if(evDate) {
+            const d = new Date(evDate);
+            dateStrEvent = d.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        const today = new Date();
+        const dateStrNow = today.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+
+        document.getElementById('surat-date').innerText = `Balikpapan, ${dateStrNow}`;
+        document.getElementById('surat-booker').innerText = `${evBooker}`;
+        document.getElementById('surat-address').innerText = evAddress;
+        
+        document.getElementById('surat-ev-name').innerText = evName;
+        document.getElementById('surat-ev-date').innerText = dateStrEvent;
+        document.getElementById('surat-ev-venue').innerText = evVenue;
+        document.getElementById('surat-sales').innerText = evSales;
+
+        let menuHTML = '';
+        let grandPax = 0;
+        let grandRev = 0;
+
+        scenarios.forEach(sc => {
+            grandPax += sc.pax;
+            grandRev += sc.revenue;
+            
+            menuHTML += `<div style="margin-top:15px; page-break-inside: avoid;">`;
+            menuHTML += `<h4 style="color:var(--dark-blue); margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">${sc.name} (${sc.mode === 'buffet' ? 'Buffet' : 'Coffee Break'}) - ${sc.pax} Pax @ ${formatRp(sc.sellingPrice)}</h4>`;
+            
+            let hasMenu = false;
+            if(sc.selections) {
+                for (const [cat, items] of Object.entries(sc.selections)) {
+                    let validItems = items.filter(i => i !== "" && i !== "—");
+                    if(validItems.length > 0) {
+                        menuHTML += `
+                            <div class="menu-item">
+                                <div class="cat">${cat}</div>
+                                <div class="items">: ${validItems.join(', ')}</div>
+                            </div>
+                        `;
+                        hasMenu = true;
+                    }
+                }
+            }
+            if(!hasMenu) menuHTML += `<i>(No menu selected for this scenario)</i>`;
+            menuHTML += `</div>`;
+        });
+
+        menuHTML += `<div style="margin-top:25px; padding-top:15px; border-top:2px dashed #ccc; font-weight:bold; font-size:16px; text-align:right;">Total Estimated Package Price: ${formatRp(grandRev)}</div>`;
+
+        document.getElementById('surat-menu-list').innerHTML = menuHTML;
+
+        document.body.classList.add('print-surat-tamu');
+        
+        setTimeout(() => {
+            window.print();
+            document.body.classList.remove('print-surat-tamu');
+        }, 300);
+    }
+
+    renderTabs();
+    loadActiveScenario();
+
+</script>
+</body>
+</html>
