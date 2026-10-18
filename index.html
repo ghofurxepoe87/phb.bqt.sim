@@ -46,11 +46,9 @@
         .header-left { display: flex; align-items: center; gap: 20px; }
         .logo-box {
             background: var(--white); padding: 10px 15px; border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 8px;
-            color: var(--primary-blue); font-weight: 800; font-size: 16px; letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
         }
-        .logo-box img { max-height: 40px; width: auto;} 
-        .logo-text-wrapper small { display: block; font-size: 8px; font-weight: 600; letter-spacing: 0; color: var(--text-dark); margin-top:2px;}
+        .logo-box img { max-height: 45px; width: auto;} 
         
         .header-title h1 { font-size: 20px; margin-bottom: 4px; font-weight: 700; }
         .header-title p { font-size: 12px; font-weight: 500; opacity: 0.9; }
@@ -72,7 +70,7 @@
         .card { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: var(--card-shadow); margin-bottom: 20px;}
         .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;}
         .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px;}
-        .input-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); }
+        .input-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
         .input-group input, .input-group select {
             width: 100%; padding: 14px 15px; border: 1.5px solid var(--border-color);
             border-radius: 12px; font-size: 14px; font-weight: 600; color: var(--text-dark);
@@ -164,13 +162,14 @@
         .banner-warning { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
         .banner-success { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
 
-        /* --- DASHBOARD EVENT STYLES (SEMPURNAKAN SEJAJAR) --- */
+        /* --- DASHBOARD EVENT STYLES (SEJAJAR SEMPURNA) --- */
         #dashboard-view { display: none; }
         .db-header { background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue)); color: white; padding: 30px; border-radius: 20px; margin-bottom: 25px; box-shadow: var(--card-shadow);}
         .db-header h2 { font-size: 20px; margin-bottom: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px;}
-        .db-event-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2);}
-        .db-event-info div span { font-size: 11px; font-weight: 600; opacity: 0.8; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;}
-        .db-event-info div strong { font-size: 16px; font-weight: 800; color: #fff; display: block;}
+        
+        .db-event-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 20px; margin-bottom: 20px;}
+        .db-event-info div span { font-size: 11px; font-weight: 700; opacity: 0.8; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .db-event-info div strong { font-size: 15px; font-weight: 600; color: #fff; display: block;}
         
         .db-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;}
         .db-card { background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px);}
@@ -215,7 +214,6 @@
         @media (max-width: 1024px) {
             .top-grid { grid-template-columns: 1fr; }
             .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: repeat(3, 1fr); }
-            .db-event-info { grid-template-columns: 1fr 1fr 1fr; }
         }
 
         @media (max-width: 768px) {
@@ -318,10 +316,8 @@
     <div class="header">
         <div class="header-left">
             <div class="logo-box">
-                <img src="logo.png" alt="Platinum Hotel Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <div class="logo-text-wrapper" style="text-align:left;">
-                    PLATINUM <small>HOTEL & CONVENTION HALL<br>BALIKPAPAN</small>
-                </div>
+                <!-- LOGO SAJA SESUAI INSTRUKSI -->
+                <img src="logo.png" alt="Platinum Hotel Logo" onerror="this.style.display='none';">
             </div>
             <div class="header-title">
                 <h1>Banquet Package Simulator</h1>
@@ -417,11 +413,13 @@
         <div id="dashboard-view">
             <div class="db-header">
                 <h2>📊 Overall Event Dashboard</h2>
+                <!-- DASHBOARD INFO SEJAJAR -->
                 <div class="db-event-info">
                     <div><span>Event Name</span><strong id="db-ev-name">-</strong></div>
                     <div><span>Booker</span><strong id="db-ev-booker">-</strong></div>
                     <div><span>Event Date</span><strong id="db-ev-date">-</strong></div>
                 </div>
+                
                 <div class="db-summary-grid">
                     <div class="db-card"><span>Total Pax</span><strong id="db-tot-pax">0</strong></div>
                     <div class="db-card"><span>Total Grand Revenue</span><strong id="db-tot-rev">Rp 0</strong></div>
@@ -595,7 +593,7 @@
                     <button class="btn-red" onclick="resetMenus()">⟲ Reset Selection</button>
                     <button class="btn-light-blue" onclick="cetakStandard()">🖨 Print View</button>
                     <!-- Minta user ke Dashboard agar satu Event (termasuk multi skenario) tersimpan -->
-                    <button class="btn-primary" onclick="alert('Menu saved locally. Open Dashboard Event to review and save the whole event.')">💾 Save This Scenario</button>
+                    <button class="btn-primary" onclick="alert('Menu saved locally. Please open 📊 Dashboard Event to review and save the whole event.')">💾 Save This Scenario</button>
                 </div>
             </div>
         </div>
@@ -773,11 +771,8 @@
         { id: 'COFFEE', cost: 3000 }, { id: 'COFFEE CUP', cost: 8000 }, { id: 'OTHER HOT DRINK', cost: 5000 }
     ];
 
-    // --- STATE MANAGEMENT & LOCAL STORAGE SETUP ---
-    // Mengambil data dari localStorage agar tidak kosong saat refresh
-    let savedLocalData = localStorage.getItem('banquet_trx');
-    let transactionHistory = savedLocalData ? JSON.parse(savedLocalData) : [];
-
+    // --- STATE MANAGEMENT & LOCAL DATA ---
+    let transactionHistory = [];
     let scenarios = [
         { id: 1, name: 'Scenario A', mode: 'buffet', allocation: 200000, pax: 50, currentTierLabel: 'T4', totalCost: 0, sellingPrice: 0, revenue: 0, profit: 0, costPct: 0, selections: {} }
     ];
@@ -1213,10 +1208,17 @@
         document.getElementById('db-menu-engineering').innerHTML = meHtml;
     }
 
-    // --- INTEGRASI SUPABASE & LOCAL STORAGE ---
+    // --- INTEGRASI SUPABASE (ONLINE) ---
     async function simpanTransaksi() {
-        const evName = document.getElementById('ev-name').value || 'Unnamed Event';
-        const evBooker = document.getElementById('ev-booker').value || '-';
+        const evName = document.getElementById('ev-name').value;
+        const evBooker = document.getElementById('ev-booker').value;
+        
+        // VALIDASI: Cegah penyimpanan kosong (Unnamed Event)
+        if (!evName || !evBooker) {
+            alert("Harap lengkapi pengisian 'Group / Event Name' dan 'PIC / Booker' terlebih dahulu sebelum menyimpan event!");
+            return;
+        }
+
         const evWa = document.getElementById('ev-wa').value || '-';
         const evBeo = document.getElementById('ev-beo').value || '-';
         const evSegment = document.getElementById('ev-segment').value || '-';
@@ -1262,46 +1264,31 @@
             profit: eventProfit
         };
 
-        let eventSavedToCloud = false;
-
-        // Coba simpan ke Supabase jika aktif
+        // PUSH KE ONLINE SUPABASE
         if (dbClient) {
             document.getElementById('loader').style.display = 'flex';
             const { data, error } = await dbClient.from('transactions').insert([newData]);
             document.getElementById('loader').style.display = 'none';
 
             if (!error) {
-                eventSavedToCloud = true;
+                alert(`Event Data "${evName}" successfully saved to Online Database!`);
             } else {
-                console.error("Supabase Error:", error);
+                alert('Database Error: ' + error.message);
             }
-        } 
-        
-        // SELALU SIMPAN KE LOCAL STORAGE SEBAGAI BACKUP/UTAMA
-        transactionHistory.push(newData);
-        localStorage.setItem('banquet_trx', JSON.stringify(transactionHistory));
-
-        if(eventSavedToCloud) {
-            alert(`Event Data "${evName}" successfully saved to Cloud Database & Local Storage!`);
         } else {
-            alert(`Event Data "${evName}" saved to Local Storage successfully! (It will appear in Reports)`);
+            alert(`Sistem Database Belum Terkoneksi. Masukkan URL dan API Supabase.`);
         }
     }
 
+    // FETCH (DOWNLOAD) DATA TERBARU DARI SERVER UNTUK SEMUA SALES
     async function fetchReportsFromSupabase() {
-        // Tarik data dari Local Storage terlebih dahulu agar tidak pernah kosong
-        let localData = localStorage.getItem('banquet_trx');
-        if(localData) {
-            transactionHistory = JSON.parse(localData);
-        }
-
-        // Sinkronisasi dengan Supabase jika aktif
         if(dbClient) {
+            // Ambil semua transaksi secara Online dari tabel Supabase
             const { data, error } = await dbClient.from('transactions').select('*').order('created_at', { ascending: false });
-            if(data && !error && data.length > 0) {
+            if(data && !error) {
                 transactionHistory = data; 
-                // Sinkronkan ke lokal
-                localStorage.setItem('banquet_trx', JSON.stringify(transactionHistory));
+            } else if (error) {
+                console.error("Gagal menarik data dari server:", error.message);
             }
         }
     }
@@ -1309,6 +1296,7 @@
     async function openReportModal() {
         document.getElementById('reportModal').style.display = 'flex';
         document.getElementById('loader').style.display = 'flex';
+        // Sinkronisasi data real-time setiap kali modal Report dibuka
         await fetchReportsFromSupabase();
         document.getElementById('loader').style.display = 'none';
         renderReportTable();
