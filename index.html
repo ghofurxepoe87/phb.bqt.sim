@@ -39,14 +39,9 @@
             background: linear-gradient(90deg, var(--dark-blue) 0%, var(--primary-blue) 50%, var(--secondary-blue) 100%);
             color: var(--white);
             padding: calc(20px + env(safe-area-inset-top)) 40px 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            position: relative;
-            z-index: 10;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; z-index: 10;
         }
         .header-left { display: flex; align-items: center; gap: 20px; }
         .logo-box {
@@ -61,8 +56,7 @@
         .header-actions { display: grid; grid-template-columns: repeat(3, auto); gap: 10px; }
         .btn-outline {
             background: transparent; border: 1px solid rgba(255,255,255,0.4); color: var(--white);
-            padding: 10px 18px; border-radius: 25px; font-size: 13px; cursor: pointer;
-            transition: all 0.2s; font-weight: 600;
+            padding: 10px 18px; border-radius: 25px; font-size: 13px; cursor: pointer; transition: all 0.2s; font-weight: 600;
         }
         .btn-outline:hover { background: rgba(255,255,255,0.15); border-color: var(--white); }
         .btn-solid-white {
@@ -92,8 +86,7 @@
         .scenario-tabs::-webkit-scrollbar { display: none; }
         .sc-tab {
             background: #e2e8f0; color: var(--text-muted); border: none; padding: 12px 24px;
-            border-radius: 25px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s;
-            white-space: nowrap; flex-shrink: 0;
+            border-radius: 25px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s; white-space: nowrap; flex-shrink: 0;
         }
         .sc-tab.active { background: var(--secondary-blue); color: var(--white); box-shadow: 0 4px 10px rgba(0,150,199,0.3);}
 
@@ -132,7 +125,7 @@
         .stat-capsule span { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; font-weight: 600;}
         .stat-capsule strong { display: block; font-size: 16px; color: var(--dark-blue); font-weight: 800;}
 
-        /* --- RESPONSIVE TABLE APP STYLE --- */
+        /* --- TABLE STYLE --- */
         .table-card { background: var(--white); border-radius: 20px; box-shadow: var(--card-shadow); padding: 20px; }
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; table-layout: fixed; min-width: 900px;}
@@ -257,13 +250,16 @@
 
         @media (max-width: 480px) {
             .summary-grid, .db-summary-grid { grid-template-columns: 1fr 1fr; }
+            .report-summary { grid-template-columns: 1fr 1fr; }
+            .header-actions { grid-template-columns: 1fr; }
+            .scenario-grid { grid-template-columns: 1fr; gap: 10px;}
         }
 
         /* --- PRINT STYLES --- */
         #surat-tamu-container { display: none; }
         @media print {
             body { background: var(--white); color: #000; padding: 0; margin: 0; overflow: visible;}
-            .header, .header-actions, .mobile-bottom-bar, .desktop-actions, .scenario-tabs, .scenario-controls, .banner-container, .btn-sc-action, .modal-overlay, #dashboard-view {
+            .header, .header-actions, .mobile-bottom-bar, .desktop-actions, .scenario-tabs, .scenario-controls, .banner-container, .btn-sc-action, #dashboard-view, .modal-overlay {
                 display: none !important;
             }
             .container { max-width: 100%; margin: 0; padding: 0; box-shadow: none; }
@@ -314,7 +310,6 @@
     <div class="header">
         <div class="header-left">
             <div class="logo-box">
-                <!-- LOGO GITHUB -->
                 <img src="logo.png" alt="Platinum Hotel Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 <span style="display:none;">PLATINUM</span>
             </div>
@@ -578,7 +573,7 @@
                 <!-- Dynamic Banner -->
                 <div class="banner-container banner-warning" id="menu-completion-banner">
                     COMPLETE THE MENU
-                    <small>Category status is checked based on the number of Menu choices compared to Qty. Category with Qty 0 does not need to be filled.</small>
+                    <small>Category status is checked based on the number of Menu choices compared to Qty.</small>
                 </div>
 
                 <!-- Desktop Actions -->
@@ -696,10 +691,10 @@
     const SUPABASE_URL = 'https://hupvhnvztvzqbdhuukpt.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1cHZobnZ6dHZ6cWJkaHV1a3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyNDY4NTIsImV4cCI6MjEwNTgyMjg1Mn0.E-XiAzngGIe_KAe2Znk201Jy55zwLUMOwL4cHhxQCPQ';
     
-    // Inisialisasi Supabase
-    let supabase = null;
-    if(typeof supabaseClient !== 'undefined') {
-        supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Inisialisasi Supabase yang Aman
+    let dbClient = null;
+    if(typeof window.supabase !== 'undefined') {
+        dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
     // --- DATABASE MENU ---
@@ -707,9 +702,9 @@
         buffet: {
             "Appetizer": ["Asinan Bogor", "Asinan Jakarta", "Fatoush Salad", "Fisherman Salad", "Fruit Salad", "Fruits Salad", "Gado Gado", "Glass Noodles Salad", "Gohu Salad", "Greek Salad", "Green Garden Salad", "Grill Chicken Salad", "Grill Vegetables Seafood Salad", "Hawaian Chicken Salad", "Hawaiian Salad", "Japanese Potato Salad", "Karedok", "Ketoprak", "Lalapan Segar Sambal Terasi", "Lawar Bali", "Lotek Bandung", "Macaroni Mayonaise", "Mix Salad Bar", "Oriental Chicken Salad", "Pasta Beef Salad", "Pecal Sayuran", "Penne With Pesto", "Potato  Salad", "Rujak Buah Campur", "Rujak Juhi", "Rujak Pengantin", "Salad Bar", "Sausage Salad", "Seafood Cocktail", "Selada Empek-Empek", "Selada Pengantin", "Sosis Solo Sauce Kacang", "Sweet Corn And Smoked Beef", "Tahu Gejrot", "Tahu Gimbal", "Tahu Goreng Medan", "Tahu Lengko", "Tahu Telur", "Tomato And Cheese", "Urapan Sayuran"], 
             "Soup": ["Asparagus Crab Soup", "Asparagus Cream Soup", "Asparagus Dengan Ayam", "Asparagus Jagung", "Beef Brenebon Soup", "Beef Goulash Soup", "Broccoli Soup", "Chicken Cream Soup", "Corn & Chicken Soup", "Coto Makassar", "Cream Mushroom Soup", "Cream Pumpkin Soup", "Gazpacho Cold Soup", "Green Peas Cream Soup", "Ikan Tiucio", "Leek Potato Soup", "Minestrone Soup", "Miso Soup", "Mushroom Cream Soup", "Onion And Mushroom Soup", "Potato Cream Soup", "Pumpkin Cream Soup", "Seafood Bisque", "Seafood Bouillabiase Soup", "Seafood Chowder Soup", "Sop Ayam Sayur", "Sop Saudara", "Soto Ayam", "Soto Bandung", "Soto Betawi", "Soto Lamongan", "Soto Madura", "Soto Mie Bogor", "Soto Padang", "Soup Kimlo", "Soup Pallu Bassa", "Sup Asam Pedas", "Sup Ayam Herbal", "Sup Baso Pangsit", "Sup Bening Sosis Dan Baso", "Sup Jagung Ayam", "Sup Miso", "Sup Oyong Dan Jamur", "Sup Sosis Sayuran", "Sup Tahu Jamur", "Tofu & Seaweed Soup", "Tom Yam Ayam", "Tom Yam Seafood", "Tomato Cream Soup", "Tomato Soup", "Vegetarian Soup"], 
-            "Rice": ["Nasi Goreng Ayam", "Nasi Goreng Ikan Asin", "Nasi Goreng Kampung", "Nasi Goreng Kari", "Nasi Goreng Merah", "Nasi Goreng Oncom", "Nasi Goreng Sambal Hijau", "Nasi Goreng Sosis", "Nasi Goreng Vegetarian", "Nasi Goreng Yang Chow", "Nasi Kerabu", "Nasi Kuning", "Nasi Uduk", "Seafood Fried Rice", "Thai Pineapple Fried Rice", "Butter Rice", "Marinara Rice", "Mashed Potatto", "Paela Rice", "Potato Gratin", "Potato Lyonese", "Potato Wedges", "Potato:", "Roasted Potato"], 
+            "Rice": ["Nasi Goreng Ayam", "Nasi Goreng Ikan Asin", "Nasi Goreng Kampung", "Nasi Goreng Kari", "Nasi Goreng Merah", "Nasi Goreng Oncom", "Nasi Goreng Sambal Hijau", "Nasi Goreng Sosis", "Nasi Goreng Vegetarian", "Nasi Goreng Yang Chow", "Nasi Kerabu", "Nasi Kuning", "Nasi Uduk", "Seafood Fried Rice", "Thai Pineapple Fried Rice", "Butter Rice", "Marinara Rice", "Mashed Potatto", "Paela Rice", "Potato Gratin", "Potato Lyonese", "Potato Wedges", "Roasted Potato"], 
             "Side Dish": ["Bakwan Jagung", "Fuyung hai", "Jamur Goreng Crispy", "Kentang Balado", "Kentang Semur", "Orek Tempe Teri", "Sambal Goreng Hati", "Sosis Bakar", "Tahu Bacem", "Tahu Goreng Tepung", "Telur Balado", "Telur Semur", "Tempe Goreng Tepung", "Tofu salt pepper", "Tumis Sosis dan Baso"], 
-            "Noodle": ["Bie Hun Goreng", "Bie Hun Goreng Ayam", "Bie Hun Goreng Seafood", "Bihun Goreng Ayam", "Bihun Goreng Cabe Hijau", "Bihun Goreng Sosis", "Bihun Masak Kari", "I Fu Mie Vegetables", "Kwetiau Siram Sapi", "Kwie Tiaw Goreng Ayam", "Kwie Tiaw Goreng Sayuran", "Kwie Tiaw Goreng Seafood", "Malay Char Kwetiau", "Mie Goreng Ala Hongkong", "Mie Goreng Ayam", "Mie Goreng Ayam Sayuran", "Mie Goreng Daging", "Mie Goreng Jawa", "Mie Goreng Seafood", "Mie Goreng Singapore", "Mie Goreng Ulang Tahun", "Mie Titi Seafood", "Pad Thai Noodles", "Sohun Goreng Ayam", "Sohun Goreng Sayur", "Tami Special Ayam", "Tami Special Daging", "Tami Special Seafood", "Tang Hun Goreng", "Tang Hun Seafood", "Tofu & Seaweed Soup", "Tom Yam Ayam", "Tom Yam Seafood", "Vegetarian Fried Noodles", "Fettucine Mushroom", "Fettucine Napolitana", "Fetucini Agli Olio", "Fetucini Seafood", "Macaroni Carbonara", "Mixed Pasta", "Pasta Arrabiata", "Penne Aglio E Olio", "Penne Amatricina Sauce", "Penne De Pasto", "Penne Putanesca Sauce", "Spaghetti Aglio Olio", "Spaghetti Carbonara", "Spaghetti Marinara", "Spaghetty Arrabiatta Sauce", "Spaghetty Seafood  Marinanara", "Summer Spaghetty"], 
+            "Noodle": ["Bie Hun Goreng", "Bie Hun Goreng Ayam", "Bie Hun Goreng Seafood", "Bihun Goreng Cabe Hijau", "Bihun Goreng Sosis", "Bihun Masak Kari", "I Fu Mie Vegetables", "Kwetiau Siram Sapi", "Kwie Tiaw Goreng Ayam", "Kwie Tiaw Goreng Sayuran", "Kwie Tiaw Goreng Seafood", "Malay Char Kwetiau", "Mie Goreng Ala Hongkong", "Mie Goreng Ayam", "Mie Goreng Ayam Sayuran", "Mie Goreng Daging", "Mie Goreng Jawa", "Mie Goreng Seafood", "Mie Goreng Singapore", "Mie Goreng Ulang Tahun", "Mie Titi Seafood", "Pad Thai Noodles", "Sohun Goreng Ayam", "Sohun Goreng Sayur", "Tami Special Ayam", "Tami Special Daging", "Tami Special Seafood", "Tang Hun Goreng", "Tang Hun Seafood", "Tofu & Seaweed Soup", "Tom Yam Ayam", "Tom Yam Seafood", "Vegetarian Fried Noodles", "Fettucine Mushroom", "Fettucine Napolitana", "Fetucini Agli Olio", "Fetucini Seafood", "Macaroni Carbonara", "Mixed Pasta", "Pasta Arrabiata", "Penne Aglio E Olio", "Penne Amatricina Sauce", "Penne De Pasto", "Penne Putanesca Sauce", "Spaghetti Aglio Olio", "Spaghetti Carbonara", "Spaghetti Marinara", "Spaghetty Arrabiatta Sauce", "Spaghetty Seafood  Marinanara", "Summer Spaghetty"], 
             "Vegetable": ["Brokoli Bawang Putih", "Brokoli Dengan Ayam", "Brokoli Saos Tiram", "Buncis Bawang Putih", "Buncis Dengan Saos Tiram", "Cap Cay", "Cap Cay Sayuran", "Gudeg Khas Jogja", "Gulai Daun Singkong", "Gulai Nangka", "Kangkung Balacan", "Mapo Tofu", "Orak Arik Sayur Telor", "Orak Arik Sayuran", "Sapo Tofu Vegetables", "Sawi Daging Bawang Putih", "Sawi Daging Dengan Saos Tiram", "Sayur Acar Kuning", "Sayur Asem", "Sayur Lodeh", "String Bean Xo", "Terong Balado", "Tumis Aneka Jamur", "Tumis Buncis Dan Wortel", "Tumis Buncis Ebi", "Tumis Cuciwis", "Tumis Daun Pepaya & Teri", "Tumis Kacang Panjang Tempe Touge", "Tumis Kacang Panjang Teri", "Tumis Kailan Bawang Putih", "Tumis Labu Dan Wortel", "Tumis Pedas Labu Siam", "Tumis Pokcoy Dan Jamur", "Tumis Sawi Hijau & Putih", "Tumis Sayur  Campur", "Tumis Tauge Ikan Asin", "Carrot And Green Peas", "Cauly Flower Butered", "Frozen Mix Vegetable", "Garden Vegetabales", "Gratinated Aubergine And Zuccini", "Jardiniere  Vegetables", "Mix Grilled Vegetables", "Mix Vegetable Garlic", "Ratatouille Vegetables", "Vegetable Gratin", "Vegetable Napolitan", "Vichy Carrot", "Yellow Curry Vegtables"], 
             "Chicken": ["Ayam Asam Manis", "Ayam Bakar Kecap", "Ayam Bakar Madu", "Ayam Betutu (Goreng / Kuah)", "Ayam Bumbu Bali", "Ayam Bumbu Rujak", "Ayam Geprek", "Ayam Goreng Bawang Putih", "Ayam Goreng Dabu-Dabu", "Ayam Goreng Kalasan", "Ayam Goreng Kremes", "Ayam Goreng Lengkuas", "Ayam Goreng Mentega", "Ayam Goreng Singkawang", "Ayam Goreng Telur Asin", "Ayam Goreng Terasi", "Ayam Goreng Wijen", "Ayam Gulai", "Ayam Kalio", "Ayam Kari", "Ayam Lada Hitam", "Ayam Lodho", "Ayam Masak Balado", "Ayam Masak Cabai Hijau", "Ayam Masak Gulai", "Ayam Masak Hunan", "Ayam Masak Kungpao", "Ayam Masak Opor", "Ayam Masak Rendang", "Ayam Masak Rica-Rica", "Ayam Masak Semur", "Ayam Masak Szechuan", "Ayam Mentega", "Ayam Panggang Bumbu Rujak", "Ayam Panggang Jogja", "Ayam Panggang Kecap", "Ayam Panggang Padang", "Ayam Panggang Taliwang", "Ayam Renyah Saos Bangkok", "Ayam Rica Rica", "Ayam Saos Inggris", "Ayam Saos Teriyaki", "Ayam Topallada", "Bbq Roast Chciken", "Chicken Ala King", "Chicken Black Pepper Sauce", "Chicken Cacciotore", "Chicken Casserole", "Chicken Fricasse", "Chicken Katsu", "Chicken Lemon Butter Sauce", "Chicken Milanese", "Chicken Mushroom Sauce", "Chicken Piccatta Milanese", "Chicken Potato Curry", "Chicken Teriyaki", "Fried Chicken", "Grill Chicken Herbs Gravy", "Kungpao Chicken", "Opor Ayam", "Pepes Ayam Kemangi", "Roasted Chicken", "Roasted Chiken Bbq Sauce", "Roasted Chiken Mushroom Sauce", "Roasted Chiken Rosmary", "Strips Herbs Chicken", "Tongseng Ayam", "WESTERN"], 
             "Fish": ["Fish Lemon Butter", "Fish Lemon Butter Sauce", "Fish Mushroom Sauce", "Fish Orange Beurre Sauce", "Fish Pineapple Coriander Sauce", "Fish Tartar", "Fish Tomato Basil Sauce", "Fish Tomato Salsa", "Fried Fish Black Pepper", "Fried Fish Creamy Sauce", "Fried Fish Mayo Sauce", "Fried Fish Tartar", "Fried Fish Thai Sauce", "Grill Fish Capers And Butter", "Grill Fish Garlic Butter", "Ikan  Saos Lemon", "Ikan Acar Kuning", "Ikan Asam Manis", "Ikan Asem Pedas", "Ikan Asin Tarakan", "Ikan Bakar Colo-Colo", "Ikan Bakar Dabu-Dabu", "Ikan Bumbu Bali", "Ikan Bumbu Kari", "Ikan Bumbu Pesmol", "Ikan Bumbu Rujak", "Ikan Dabu Dabu", "Ikan Dori Relur Asin", "Ikan Goreng Ala Thai", "Ikan Goreng Balado", "Ikan Goreng Mentega", "Ikan Goreng Rica-Rica", "Ikan Goreng Sambal Asap", "Ikan Goreng Saos Malaysia", "Ikan Goreng Saos Mangga", "Ikan Goreng Sauce Acar Kuning", "Ikan Goreng Szechuan", "Ikan Gulai", "Ikan Lempah Kuning", "Ikan Masak Bumbu Pesmol", "Ikan Masak Habang", "Ikan Masak Kemangi", "Ikan Masak Szechuan", "Ikan Masak Tausi", "Ikan Panggang Padang", "Ikan Parappe", "Ikan Pepes Kemagi", "Ikan Rica-Rica", "Ikan Sambal Matah", "Ikan Saos Bangkok", "Ikan Saos Mentega", "Ikan Saos Plum", "Ikan Saos Taucho", "Ikan Sauce Teriyaki", "Ikan Saus Lemon Sauce", "Pepes Ikan", "Steam Fish", "Gulai Asam Pedas"], 
@@ -793,13 +788,14 @@
         if(!container) return;
         container.innerHTML = '';
         
-        scenarios.forEach(sc => {
+        for(let i=0; i<scenarios.length; i++) {
+            let sc = scenarios[i];
             const btn = document.createElement('button');
             btn.className = `sc-tab ${sc.id === activeScenarioId && !isDashboardView ? 'active' : ''}`;
             btn.innerText = sc.name;
             btn.onclick = () => { isDashboardView = false; switchScenario(sc.id); toggleDashboard(false); };
             container.appendChild(btn);
-        });
+        }
 
         const dbBtn = document.createElement('button');
         dbBtn.className = `sc-tab ${isDashboardView ? 'active' : ''}`;
@@ -845,7 +841,14 @@
 
     function hapusSkenario() {
         if(scenarios.length <= 1) { alert('Minimum 1 scenario required!'); return; }
-        scenarios = scenarios.filter(s => s.id !== activeScenarioId);
+        
+        let newScenarios = [];
+        for(let i=0; i<scenarios.length; i++) {
+            if(scenarios[i].id !== activeScenarioId) {
+                newScenarios.push(scenarios[i]);
+            }
+        }
+        scenarios = newScenarios;
         switchScenario(scenarios[0].id);
     }
 
@@ -1128,7 +1131,8 @@
         tbody.innerHTML = '';
         let menuCount = {}; 
 
-        scenarios.forEach(sc => {
+        for(let i=0; i<scenarios.length; i++) {
+            let sc = scenarios[i];
             gPax += sc.pax; gRev += sc.revenue; gCost += sc.totalCost; gProfit += sc.profit;
             let pLabel = sc.mode === 'buffet' ? `Buffet ${sc.currentTierLabel}` : `Coffee Break ${sc.currentTierLabel}`;
             
@@ -1146,14 +1150,15 @@
             if(sc.selections) {
                 for (const [cat, items] of Object.entries(sc.selections)) {
                     if (!menuCount[cat]) menuCount[cat] = {};
-                    items.forEach(item => {
+                    for(let j=0; j<items.length; j++) {
+                        let item = items[j];
                         if (item && item !== "—" && item !== "") {
                             menuCount[cat][item] = (menuCount[cat][item] || 0) + sc.pax; 
                         }
-                    });
+                    }
                 }
             }
-        });
+        }
 
         document.getElementById('db-tot-pax').innerText = gPax + ' Pax';
         document.getElementById('db-tot-rev').innerText = formatRp(gRev);
@@ -1199,12 +1204,12 @@
         let eventCost = 0;
         let eventProfit = 0;
 
-        scenarios.forEach(sc => {
-            eventPax += sc.pax;
-            eventRevenue += sc.revenue;
-            eventCost += sc.totalCost;
-            eventProfit += sc.profit;
-        });
+        for(let i=0; i<scenarios.length; i++) {
+            eventPax += scenarios[i].pax;
+            eventRevenue += scenarios[i].revenue;
+            eventCost += scenarios[i].totalCost;
+            eventProfit += scenarios[i].profit;
+        }
 
         let eventCostPct = eventRevenue > 0 ? (eventCost / eventRevenue) * 100 : 0;
 
@@ -1225,9 +1230,9 @@
             profit: eventProfit
         };
 
-        if (supabase) {
+        if (dbClient) {
             document.getElementById('loader').style.display = 'flex';
-            const { data, error } = await supabase.from('transactions').insert([newData]);
+            const { data, error } = await dbClient.from('transactions').insert([newData]);
             document.getElementById('loader').style.display = 'none';
 
             if (error) {
@@ -1243,8 +1248,8 @@
     }
 
     async function fetchReportsFromSupabase() {
-        if(supabase) {
-            const { data, error } = await supabase.from('transactions').select('*').order('created_at', { ascending: false });
+        if(dbClient) {
+            const { data, error } = await dbClient.from('transactions').select('*').order('created_at', { ascending: false });
             if(data && !error) {
                 transactionHistory = data; 
             }
@@ -1269,7 +1274,8 @@
         
         let tRev = 0, tCost = 0, tProfit = 0;
 
-        transactionHistory.forEach(trx => {
+        for(let i=0; i<transactionHistory.length; i++) {
+            let trx = transactionHistory[i];
             tRev += trx.revenue || 0;
             tCost += trx.cost || 0;
             tProfit += trx.profit || 0;
@@ -1292,7 +1298,7 @@
                     <td style="color:var(--primary-blue); font-weight:700;">${formatRp(trx.profit || 0)}</td>
                 </tr>
             `;
-        });
+        }
 
         let avgCostPct = tRev > 0 ? (tCost / tRev) * 100 : 0;
 
@@ -1322,29 +1328,43 @@
 
         let menuHTML = '';
         let grandRev = 0;
-        scenarios.forEach(sc => {
+        
+        for(let i=0; i<scenarios.length; i++) {
+            let sc = scenarios[i];
             grandRev += sc.revenue;
+            
             menuHTML += `<div style="margin-top:15px; page-break-inside: avoid;">`;
             menuHTML += `<h4 style="color:var(--dark-blue); margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">${sc.name} (${sc.mode === 'buffet' ? 'Buffet' : 'Coffee Break'}) - ${sc.pax} Pax @ ${formatRp(sc.sellingPrice)}</h4>`;
+            
             let hasMenu = false;
             if(sc.selections) {
                 for (const [cat, items] of Object.entries(sc.selections)) {
-                    let valid = items.filter(i => i !== "" && i !== "—");
-                    if(valid.length > 0) {
-                        menuHTML += `<div class="menu-item"><div class="cat">${cat}</div><div class="items">: ${valid.join(', ')}</div></div>`;
+                    let validItems = items.filter(i => i !== "" && i !== "—");
+                    if(validItems.length > 0) {
+                        menuHTML += `
+                            <div class="menu-item">
+                                <div class="cat">${cat}</div>
+                                <div class="items">: ${validItems.join(', ')}</div>
+                            </div>
+                        `;
                         hasMenu = true;
                     }
                 }
             }
-            if(!hasMenu) menuHTML += `<i>(No menu selected)</i>`;
+            if(!hasMenu) menuHTML += `<i>(No menu selected for this scenario)</i>`;
             menuHTML += `</div>`;
-        });
+        }
 
         menuHTML += `<div style="margin-top:25px; padding-top:15px; border-top:2px dashed #ccc; font-weight:bold; font-size:16px; text-align:right;">Total Estimated Package Price: ${formatRp(grandRev)}</div>`;
+
         document.getElementById('surat-menu-list').innerHTML = menuHTML;
-        
+
         document.body.classList.add('print-surat-tamu');
-        setTimeout(() => { window.print(); document.body.classList.remove('print-surat-tamu'); }, 300);
+        
+        setTimeout(() => {
+            window.print();
+            document.body.classList.remove('print-surat-tamu');
+        }, 300);
     }
 
     // INIT
