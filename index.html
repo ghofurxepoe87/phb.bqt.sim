@@ -86,7 +86,8 @@
         .scenario-tabs::-webkit-scrollbar { display: none; }
         .sc-tab {
             background: #e2e8f0; color: var(--text-muted); border: none; padding: 12px 24px;
-            border-radius: 25px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s; white-space: nowrap; flex-shrink: 0;
+            border-radius: 25px; font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s;
+            white-space: nowrap; flex-shrink: 0;
         }
         .sc-tab.active { background: var(--secondary-blue); color: var(--white); box-shadow: 0 4px 10px rgba(0,150,199,0.3);}
 
@@ -125,7 +126,7 @@
         .stat-capsule span { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; font-weight: 600;}
         .stat-capsule strong { display: block; font-size: 16px; color: var(--dark-blue); font-weight: 800;}
 
-        /* --- TABLE STYLE --- */
+        /* --- RESPONSIVE TABLE APP STYLE --- */
         .table-card { background: var(--white); border-radius: 20px; box-shadow: var(--card-shadow); padding: 20px; }
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; table-layout: fixed; min-width: 900px;}
@@ -143,15 +144,15 @@
         td:nth-child(1) { text-align: center; font-weight: 700;}
         .col-qty input { width: 100%; padding: 10px; text-align: center; border: 1.5px solid var(--border-color); border-radius: 8px; background:#f8fafc; font-weight:800; font-size: 14px;}
         
+        /* Dropdown - Panah Dihilangkan sesuai instruksi */
         .menu-select { 
             width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); 
             border-radius: 10px; font-size: 13px; color: var(--text-dark);
             background: #fff; cursor: pointer; font-weight: 600; appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231e293b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto;
+            text-align: center; text-align-last: center; /* Center text visually */
         }
         .menu-select:focus { border-color: var(--secondary-blue); box-shadow: 0 0 0 3px rgba(0,150,199,0.1); outline: none;}
-        .menu-select:disabled { background: #f1f5f9; color: #94a3b8; border-color: transparent; text-align: center; background-image: none;}
+        .menu-select:disabled { background: #f1f5f9; color: #94a3b8; border-color: transparent;}
 
         .status-badge { padding: 8px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-align: center; display: block; width: 100%;}
         .badge-sesuai { background: #d1fae5; color: #047857; }
@@ -165,8 +166,11 @@
         /* --- DASHBOARD EVENT STYLES --- */
         #dashboard-view { display: none; }
         .db-header { background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue)); color: white; padding: 30px; border-radius: 20px; margin-bottom: 25px; box-shadow: var(--card-shadow);}
-        .db-header h2 { font-size: 24px; margin-bottom: 8px; font-weight: 800;}
-        .db-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 25px;}
+        .db-header h2 { font-size: 24px; margin-bottom: 15px; font-weight: 800;}
+        .db-event-info { display: flex; gap: 30px; background: rgba(0,0,0,0.15); padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; flex-wrap: wrap;}
+        .db-event-info div { font-size: 13px; font-weight: 500;}
+        .db-event-info strong { display: block; font-size: 15px; font-weight: 700; margin-top: 3px; color: #fff;}
+        .db-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;}
         .db-card { background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px);}
         .db-card span { font-size: 13px; font-weight: 600; opacity: 0.9; margin-bottom: 5px; display: block;}
         .db-card strong { font-size: 26px; font-weight: 800;}
@@ -199,6 +203,7 @@
         .report-table th { background: #e2e8f0; padding: 16px; font-weight: 800; color: var(--dark-blue); }
         .report-table td { padding: 16px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
+        .btn-green { background: #10b981; color: white; border: none; padding: 14px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 14px;}
 
         /* =========================================
            MOBILE APP RESPONSIVE STYLES
@@ -206,6 +211,7 @@
         @media (max-width: 1024px) {
             .top-grid { grid-template-columns: 1fr; }
             .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: repeat(3, 1fr); }
+            .db-event-info { flex-direction: column; gap: 10px; }
         }
 
         @media (max-width: 768px) {
@@ -250,9 +256,6 @@
 
         @media (max-width: 480px) {
             .summary-grid, .db-summary-grid { grid-template-columns: 1fr 1fr; }
-            .report-summary { grid-template-columns: 1fr 1fr; }
-            .header-actions { grid-template-columns: 1fr; }
-            .scenario-grid { grid-template-columns: 1fr; gap: 10px;}
         }
 
         /* --- PRINT STYLES --- */
@@ -407,7 +410,11 @@
         <div id="dashboard-view">
             <div class="db-header">
                 <h2>📊 Overall Event Dashboard</h2>
-                <p>Total summary of all scenarios in this event.</p>
+                <div class="db-event-info">
+                    <div><span>Event Name</span><strong id="db-ev-name">-</strong></div>
+                    <div><span>Booker</span><strong id="db-ev-booker">-</strong></div>
+                    <div><span>Event Date</span><strong id="db-ev-date">-</strong></div>
+                </div>
                 <div class="db-summary-grid">
                     <div class="db-card"><span>Total Pax</span><strong id="db-tot-pax">0</strong></div>
                     <div class="db-card"><span>Total Grand Revenue</span><strong id="db-tot-rev">Rp 0</strong></div>
@@ -573,7 +580,7 @@
                 <!-- Dynamic Banner -->
                 <div class="banner-container banner-warning" id="menu-completion-banner">
                     COMPLETE THE MENU
-                    <small>Category status is checked based on the number of Menu choices compared to Qty.</small>
+                    <small>Category status is checked based on the number of Menu choices compared to Qty. Category with Qty 0 does not need to be filled.</small>
                 </div>
 
                 <!-- Desktop Actions -->
@@ -678,6 +685,7 @@
             </div>
 
             <div class="modal-actions" style="margin-bottom: 20px;">
+                <button class="btn-green" onclick="downloadExcel()">📥 Download Excel</button>
                 <button class="btn-light-blue" onclick="cetakStandard()">🖨 Print Report / PDF</button>
                 <button class="btn-primary" style="width:auto;" onclick="closeReportModal()">Close Report</button>
             </div>
@@ -688,12 +696,12 @@
     // ==========================================
     // 1. SUPABASE CONFIGURATION (GANTI INI!)
     // ==========================================
-    const SUPABASE_URL = 'https://hupvhnvztvzqbdhuukpt.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1cHZobnZ6dHZ6cWJkaHV1a3B0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAyNDY4NTIsImV4cCI6MjEwNTgyMjg1Mn0.E-XiAzngGIe_KAe2Znk201Jy55zwLUMOwL4cHhxQCPQ';
+    const SUPABASE_URL = 'MASUKKAN_URL_SUPABASE_ANDA_DISINI';
+    const SUPABASE_ANON_KEY = 'MASUKKAN_API_KEY_ANON_ANDA_DISINI';
     
-    // Inisialisasi Supabase yang Aman
+    // Inisialisasi Supabase
     let dbClient = null;
-    if(typeof window.supabase !== 'undefined') {
+    if(typeof window.supabase !== 'undefined' && SUPABASE_URL !== 'MASUKKAN_URL_SUPABASE_ANDA_DISINI') {
         dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
@@ -725,7 +733,7 @@
         }
     };
 
-    // --- LOGIC RULES ---
+    // --- RULES ---
     function getBuffetRules(alloc) {
         if(alloc >= 285000) return { tier: 'T1', round: 300000, min: 285000, max: 9999999, qty: { Appetizer:1, Soup:1, Rice:1, 'Side Dish':1, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:1, Stall:2, 'Dessert 1':1, 'Dessert 2':1 } };
         if(alloc >= 260000) return { tier: 'T2', round: 275000, min: 260000, max: 284999, qty: { Appetizer:1, Soup:1, Rice:1, 'Side Dish':0, Noodle:1, Vegetable:1, Chicken:1, Fish:1, Beef:1, Stall:1, 'Dessert 1':1, 'Dessert 2':1 } };
@@ -881,6 +889,7 @@
         for (let i = 0; i < scenarios.length; i++) {
             if (scenarios[i].id === activeScenarioId) { active = scenarios[i]; break; }
         }
+        if(!active) return;
         
         active.mode = document.getElementById('pkg-buffet').checked ? 'buffet' : 'cb';
         active.allocation = (active.mode === 'buffet') ? 200000 : 50000;
@@ -1081,7 +1090,7 @@
                 banner.innerHTML = 'MENU IS COMPLETE <small>All menu selections for this scenario meet the quota.</small>';
             } else {
                 banner.className = 'banner-container banner-warning';
-                banner.innerHTML = 'COMPLETE THE MENU <small>Category status is checked based on the number of Menu choices compared to Qty. Category with Qty 0 does not need to be filled.</small>';
+                banner.innerHTML = 'COMPLETE THE MENU <small>Category status is checked based on the number of Menu choices compared to Qty.</small>';
             }
         }
     }
@@ -1125,6 +1134,19 @@
 
     // --- DASHBOARD EVENT ---
     function renderDashboard() {
+        // Tampilkan Detail Info Event di Atas
+        const evName = document.getElementById('ev-name').value || '-';
+        const evBooker = document.getElementById('ev-booker').value || '-';
+        const evDate = document.getElementById('ev-date').value;
+        let dateStrEvent = '-';
+        if(evDate) {
+            dateStrEvent = new Date(evDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+        
+        document.getElementById('db-ev-name').innerText = evName;
+        document.getElementById('db-ev-booker').innerText = evBooker;
+        document.getElementById('db-ev-date').innerText = dateStrEvent;
+
         let gPax = 0, gRev = 0, gCost = 0, gProfit = 0;
         let tbody = document.getElementById('db-table-body');
         if(!tbody) return;
@@ -1137,13 +1159,13 @@
             let pLabel = sc.mode === 'buffet' ? `Buffet ${sc.currentTierLabel}` : `Coffee Break ${sc.currentTierLabel}`;
             
             tbody.innerHTML += `
-                <tr>
-                    <td style="font-weight:700;">${sc.name}</td>
-                    <td><span style="background:#e2e8f0; padding:4px 8px; border-radius:12px; font-weight:700; font-size:11px;">${pLabel}</span></td>
-                    <td>${sc.pax}</td>
-                    <td>${formatRp(sc.sellingPrice)}</td>
-                    <td>${formatRp(sc.revenue)}</td>
-                    <td style="color:var(--primary-blue); font-weight:700;">${formatRp(sc.profit)}</td>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding:15px; font-weight:700;">${sc.name}</td>
+                    <td style="padding:15px;"><span style="background:#e2e8f0; padding:4px 8px; border-radius:12px; font-weight:700; font-size:11px;">${pLabel}</span></td>
+                    <td style="padding:15px;">${sc.pax}</td>
+                    <td style="padding:15px;">${formatRp(sc.sellingPrice)}</td>
+                    <td style="padding:15px;">${formatRp(sc.revenue)}</td>
+                    <td style="padding:15px; color:var(--primary-blue); font-weight:700;">${formatRp(sc.profit)}</td>
                 </tr>
             `;
 
@@ -1307,6 +1329,58 @@
         document.getElementById('rep-total-cost').innerText = formatRp(tCost);
         document.getElementById('rep-avg-cost').innerText = avgCostPct.toFixed(1) + '%';
         document.getElementById('rep-total-profit').innerText = formatRp(tProfit);
+    }
+
+    // --- DOWNLOAD CSV (EXCEL) ---
+    function downloadExcel() {
+        if(transactionHistory.length === 0) {
+            alert("No data available to download.");
+            return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        
+        // Headers
+        csvContent += "Event Date,Event Name,Booker,WhatsApp,BEO,Segment,Status,Sales Person,Venue,Total Pax,Total Revenue,Total Cost,Cost %,Total Profit\n";
+
+        // Rows
+        for(let i=0; i<transactionHistory.length; i++) {
+            let trx = transactionHistory[i];
+            
+            // Format numbers nicely without Rp prefix so Excel can read them as numbers
+            let rev = trx.revenue || 0;
+            let cost = trx.cost || 0;
+            let profit = trx.profit || 0;
+            let cpct = (trx.cost_pct || trx.costPct || 0).toFixed(1) + "%";
+
+            let rowArray = [
+                `"${trx.event_date || trx.date || ''}"`,
+                `"${trx.name || ''}"`,
+                `"${trx.booker || ''}"`,
+                `"${trx.wa || ''}"`,
+                `"${trx.beo || ''}"`,
+                `"${trx.segment || ''}"`,
+                `"${trx.status || ''}"`,
+                `"${trx.sales || ''}"`,
+                `"${trx.venue || ''}"`,
+                trx.pax || 0,
+                rev,
+                cost,
+                `"${cpct}"`,
+                profit
+            ];
+
+            csvContent += rowArray.join(",") + "\n";
+        }
+
+        // Trigger Download
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "Platinum_Banquet_Report.csv");
+        document.body.appendChild(link); // Required for FF
+        link.click();
+        document.body.removeChild(link);
     }
 
     // --- PRINT / PDF ---
