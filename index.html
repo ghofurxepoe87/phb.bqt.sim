@@ -8,6 +8,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Platinum Hotel - Banquet Simulator App</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --primary-blue: #0077b6;
@@ -46,11 +50,11 @@
         }
         .header-left { display: flex; align-items: center; gap: 20px; }
         .logo-box {
-            background: var(--white); padding: 12px 24px; border-radius: 12px;
-            color: var(--primary-blue); font-weight: 800; font-size: 18px; text-align: center;
-            letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background: var(--white); padding: 10px; border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
         }
-        .logo-box small { display: block; font-size: 9px; font-weight: 600; letter-spacing: 0; color: var(--text-dark); margin-top:2px;}
+        .logo-box img { max-height: 50px; width: auto;} /* Menampilkan Logo GitHub */
+        
         .header-title h1 { font-size: 20px; margin-bottom: 4px; font-weight: 700; }
         .header-title p { font-size: 12px; font-weight: 500; opacity: 0.9; }
         
@@ -199,7 +203,6 @@
         .rs-box strong { display: block; font-size: 18px; color: var(--dark-blue); font-weight: 800;}
         
         .report-table-wrapper { background: var(--white); border-radius: 16px; overflow-x: auto; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        /* Make report table wider to fit all columns */
         .report-table { width: 100%; text-align: left; border-collapse: collapse; font-size: 13px; min-width: 1600px; }
         .report-table th { background: #e2e8f0; padding: 16px; font-weight: 800; color: var(--dark-blue); }
         .report-table td { padding: 16px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
@@ -223,7 +226,6 @@
             .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: 1fr 1fr; }
             .card { padding: 20px; border-radius: 16px; }
             
-            /* Card-based Table for Mobile */
             .table-card { padding: 15px; background: transparent; box-shadow: none;}
             table, thead, tbody, th, td, tr { display: block; width: 100%; }
             thead tr { display: none; } 
@@ -249,7 +251,6 @@
 
             .desktop-actions { display: none; } 
             
-            /* Sticky Bottom Bar for Mobile */
             .mobile-bottom-bar {
                 display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
                 background: var(--white); box-shadow: 0 -5px 20px rgba(0,0,0,0.08);
@@ -317,8 +318,9 @@
     <div class="header">
         <div class="header-left">
             <div class="logo-box">
-                PLATINUM
-                <small>HOTEL & CONVENTION HALL<br>BALIKPAPAN</small>
+                <!-- LOGO GITHUB -->
+                <img src="logo.png" alt="Platinum Hotel Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <span style="display:none;">PLATINUM</span>
             </div>
             <div class="header-title">
                 <h1>Banquet Package Simulator</h1>
@@ -452,7 +454,7 @@
             </div>
 
             <div class="desktop-actions" style="justify-content: center; margin-bottom:20px;">
-                <button class="btn-primary" style="width: 100%; max-width: 400px; padding:18px; font-size:16px;" onclick="simpanTransaksi()">💾 Save Event Transaction</button>
+                <button class="btn-primary" style="width: 100%; max-width: 400px; padding:18px; font-size:16px;" onclick="simpanTransaksiToSupabase()">💾 Save Event Transaction</button>
             </div>
         </div>
 
@@ -587,7 +589,8 @@
                 <div class="desktop-actions">
                     <button class="btn-red" onclick="resetMenus()">⟲ Reset Selection</button>
                     <button class="btn-light-blue" onclick="cetakStandard()">🖨 Print View</button>
-                    <button class="btn-primary" onclick="simpanTransaksi()">💾 Save This Scenario</button>
+                    <!-- Tombol ini nanti mengarah ke Dashboard untuk save gabungan -->
+                    <button class="btn-primary" onclick="alert('Please go to Dashboard Event to save the transaction.')">💾 Save This Scenario</button>
                 </div>
             </div>
         </div>
@@ -596,7 +599,7 @@
         <div class="mobile-bottom-bar">
             <button class="btn-mobile-secondary" onclick="openReportModal()">📑 Reports</button>
             <button class="btn-mobile-secondary" onclick="cetakSuratTamu()">PDF to Guest</button>
-            <button class="btn-mobile-primary" onclick="simpanTransaksi()">💾 Save Event</button>
+            <button class="btn-mobile-primary" onclick="simpanTransaksiToSupabase()">💾 Save Event</button>
         </div>
 
         <!-- Surat Tamu Container (Hidden by default, shown only on print) -->
@@ -669,9 +672,9 @@
                             <th>BEO</th>
                             <th>Segment</th>
                             <th>Status</th>
-                            <th>Sales Person</th>
-                            <th>Venue / Room</th>
-                            <th>Total Pax</th>
+                            <th>Sales</th>
+                            <th>Venue</th>
+                            <th>Pax</th>
                             <th>Revenue</th>
                             <th>Cost</th>
                             <th>Cost %</th>
@@ -692,6 +695,18 @@
     </div>
 
 <script>
+    // ==========================================
+    // 1. SUPABASE CONFIGURATION (GANTI INI!)
+    // ==========================================
+    const SUPABASE_URL = 'MASUKKAN_URL_SUPABASE_ANDA_DISINI';
+    const SUPABASE_ANON_KEY = 'MASUKKAN_API_KEY_ANON_ANDA_DISINI';
+    
+    // Inisialisasi Supabase (hanya akan aktif jika URL & Key diisi)
+    let supabase = null;
+    if(SUPABASE_URL !== 'MASUKKAN_URL_SUPABASE_ANDA_DISINI') {
+        supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
     // --- DATABASE MENU ---
     const menuDB = {
         buffet: {
@@ -759,16 +774,6 @@
     let scenarioCounter = 1;
     let transactionHistory = []; 
     let isDashboardView = false;
-
-    // Format Helpers
-    const formatRp = (num) => 'Rp ' + new Intl.NumberFormat('id-ID').format(num);
-    const parseNumber = (str) => parseInt(str.toString().replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
-
-    function formatInput(el) {
-        let val = parseNumber(el.value);
-        if(val === 0 && el.value === "") { el.value = ""; return; }
-        el.value = new Intl.NumberFormat('id-ID').format(val);
-    }
 
     // --- UI RENDERING ---
     function renderTabs() {
@@ -1143,8 +1148,8 @@
         countTotalSelected();
     }
 
-    // --- TRANSACTION SAVING & REPORTING ---
-    function simpanTransaksi() {
+    // --- INTEGRASI SUPABASE ---
+    async function simpanTransaksiToSupabase() {
         const evName = document.getElementById('ev-name').value || 'Unnamed Event';
         const evBooker = document.getElementById('ev-booker').value || '-';
         const evAddress = document.getElementById('ev-address').value || '-';
@@ -1176,8 +1181,8 @@
 
         let eventCostPct = eventRevenue > 0 ? (eventCost / eventRevenue) * 100 : 0;
 
-        transactionHistory.push({
-            date: dateStr,
+        const newData = {
+            event_date: dateStr,
             name: evName,
             booker: evBooker,
             wa: evWa,
@@ -1189,16 +1194,43 @@
             pax: eventPax,
             revenue: eventRevenue,
             cost: eventCost,
-            costPct: eventCostPct,
-            profit: eventProfit,
-            scenariosCount: scenarios.length
-        });
+            cost_pct: eventCostPct,
+            profit: eventProfit
+        };
 
-        alert(`Event Data "${evName}" (Total ${scenarios.length} Scenarios) saved successfully!`);
+        // Jika Supabase sudah dikonfigurasi, simpan ke Cloud
+        if (supabase) {
+            document.body.style.cursor = 'wait'; // Loading UI
+            const { data, error } = await supabase.from('transactions').insert([newData]);
+            document.body.style.cursor = 'default';
+
+            if (error) {
+                alert('Error saving to Supabase: ' + error.message);
+            } else {
+                alert(`Event Data "${evName}" successfully saved to Supabase Cloud Database!`);
+                transactionHistory.push(newData); // Also save to local memory for current session
+            }
+        } else {
+            // Jika Supabase belum dikonfigurasi, simpan di memori lokal (untuk demo/testing)
+            transactionHistory.push(newData);
+            alert(`[Local Mode] Event Data "${evName}" saved successfully! (Supabase is not configured yet).`);
+        }
     }
 
-    function openReportModal() {
+    // --- FETCH DATA DARI SUPABASE SAAT BUKA REPORT ---
+    async function fetchReportsFromSupabase() {
+        if(supabase) {
+            const { data, error } = await supabase.from('transactions').select('*').order('created_at', { ascending: false });
+            if(data && !error) {
+                transactionHistory = data; // Timpa local memory dengan data dari cloud
+            }
+        }
+    }
+
+    async function openReportModal() {
         document.getElementById('reportModal').style.display = 'flex';
+        // Ambil data terbaru dari cloud sebelum merender tabel
+        if(supabase) await fetchReportsFromSupabase();
         renderReportTable();
     }
 
@@ -1213,13 +1245,13 @@
         let tRev = 0, tCost = 0, tProfit = 0;
 
         transactionHistory.forEach(trx => {
-            tRev += trx.revenue;
-            tCost += trx.cost;
-            tProfit += trx.profit;
+            tRev += trx.revenue || 0;
+            tCost += trx.cost || 0;
+            tProfit += trx.profit || 0;
             
             tbody.innerHTML += `
                 <tr>
-                    <td>${trx.date}</td>
+                    <td>${trx.event_date || trx.date}</td>
                     <td style="font-weight:700;">${trx.name}</td>
                     <td>${trx.booker}</td>
                     <td>${trx.wa}</td>
@@ -1229,10 +1261,10 @@
                     <td>${trx.sales}</td>
                     <td>${trx.venue}</td>
                     <td>${trx.pax}</td>
-                    <td>${formatRp(trx.revenue)}</td>
-                    <td>${formatRp(trx.cost)}</td>
-                    <td>${trx.costPct.toFixed(1)}%</td>
-                    <td style="color:var(--primary-blue); font-weight:700;">${formatRp(trx.profit)}</td>
+                    <td>${formatRp(trx.revenue || 0)}</td>
+                    <td>${formatRp(trx.cost || 0)}</td>
+                    <td>${(trx.cost_pct || trx.costPct || 0).toFixed(1)}%</td>
+                    <td style="color:var(--primary-blue); font-weight:700;">${formatRp(trx.profit || 0)}</td>
                 </tr>
             `;
         });
