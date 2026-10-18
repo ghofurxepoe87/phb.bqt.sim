@@ -7,6 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Platinum Hotel - Banquet Simulator App</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Supabase Library -->
@@ -53,7 +57,7 @@
         .header-title h1 { font-size: 20px; margin-bottom: 4px; font-weight: 700; }
         .header-title p { font-size: 12px; font-weight: 500; opacity: 0.9; }
         
-        .header-actions { display: grid; grid-template-columns: repeat(3, auto); gap: 10px; }
+        .header-actions { display: grid; grid-template-columns: repeat(2, auto); gap: 10px; }
         .btn-outline {
             background: transparent; border: 1px solid rgba(255,255,255,0.4); color: var(--white);
             padding: 10px 18px; border-radius: 25px; font-size: 13px; cursor: pointer; transition: all 0.2s; font-weight: 600;
@@ -126,22 +130,24 @@
         .stat-capsule span { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; font-weight: 600; white-space: nowrap;}
         .stat-capsule strong { display: block; font-size: 16px; color: var(--dark-blue); font-weight: 800; white-space: nowrap;}
 
-        /* --- TABLE STYLE --- */
+        /* --- TABLE STYLE (MENU SIMULATOR) --- */
         .table-card { background: var(--white); border-radius: 20px; box-shadow: var(--card-shadow); padding: 20px; }
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; table-layout: fixed; min-width: 900px;}
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        
         th { background: #f8fafc; padding: 16px 15px; font-weight: 800; color: var(--text-muted); border-bottom: 2px solid var(--border-color); white-space: nowrap; }
         td { padding: 14px 15px; border-bottom: 1px solid var(--border-color); vertical-align: middle; white-space: nowrap; }
         
-        th:nth-child(1) { width: 4%; text-align: center; }
-        th:nth-child(2) { width: 14%; }
-        th:nth-child(3) { width: 10%; }
-        th:nth-child(4) { width: 6%; text-align: center; }
-        th:nth-child(5) { width: 12%; }
-        th:nth-child(6), th:nth-child(7), th:nth-child(8) { width: 15%; }
-        th:nth-child(9) { width: 9%; text-align: center; }
+        #menu-table { min-width: 900px; table-layout: fixed; }
+        #menu-table th:nth-child(1) { width: 5%; text-align: center; }
+        #menu-table th:nth-child(2) { width: 14%; }
+        #menu-table th:nth-child(3) { width: 10%; }
+        #menu-table th:nth-child(4) { width: 8%; text-align: center; }
+        #menu-table th:nth-child(5) { width: 12%; }
+        #menu-table th:nth-child(6), #menu-table th:nth-child(7), #menu-table th:nth-child(8) { width: 14%; }
+        #menu-table th:nth-child(9) { width: 9%; text-align: center; }
+        #menu-table td:nth-child(1) { text-align: center; font-weight: 700;}
         
-        td:nth-child(1) { text-align: center; font-weight: 700;}
         .col-qty input { width: 100%; padding: 10px; text-align: center; border: 1.5px solid var(--border-color); border-radius: 8px; background:#f8fafc; font-weight:800; font-size: 14px;}
         
         .menu-select { 
@@ -200,10 +206,11 @@
         .rs-box span { display: block; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; white-space: nowrap;}
         .rs-box strong { display: block; font-size: 18px; color: var(--dark-blue); font-weight: 800; white-space: nowrap;}
         
-        .report-table-wrapper { background: var(--white); border-radius: 16px; overflow-x: auto; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .report-table { width: 100%; text-align: left; border-collapse: collapse; font-size: 13px; min-width: 1000px; }
-        /* MENCEGAH TULISAN MENUMPUK DI REPORT */
-        .report-table th, .report-table td { padding: 15px; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); white-space: nowrap !important; font-weight: 500;}
+        /* FIX UNTUK TABEL REPORT AGAR TIDAK MENUMPUK */
+        .report-table-wrapper { background: var(--white); border-radius: 16px; overflow-x: auto; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; }
+        .report-table { width: 100%; text-align: left; border-collapse: collapse; font-size: 13px; min-width: max-content; }
+        
+        .report-table th, .report-table td { padding: 16px 24px; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); white-space: nowrap !important; font-weight: 500;}
         .report-table th { background: #e2e8f0; font-weight: 800; color: var(--dark-blue); border-right: 1px solid #cbd5e1;}
         
         .modal-actions { display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
@@ -228,18 +235,19 @@
             .form-grid-2, .form-grid-3, .cp-row { grid-template-columns: 1fr; gap: 15px; }
             .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: 1fr 1fr; }
             .card { padding: 20px; border-radius: 16px; }
+            .db-event-info { grid-template-columns: 1fr; gap: 10px; }
             
             .table-card { padding: 15px; background: transparent; box-shadow: none;}
-            table, thead, tbody, th, td, tr { display: block; width: 100%; }
-            thead tr { display: none; } 
-            tr { background: var(--white); margin-bottom: 15px; border-radius: 16px; padding: 15px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color); }
-            td { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border: none !important; border-bottom: 1px dashed var(--border-color) !important; text-align: right; white-space: normal !important;}
-            td:last-child { border-bottom: none !important; padding-bottom: 0;}
-            td:first-child { display: none; } 
-            td::before { content: attr(data-label); font-weight: 700; color: var(--text-muted); font-size: 13px; width: 35%; flex-shrink: 0; text-align: left;}
-            td > select, td > input, td > span { width: 65%; font-size: 14px;}
-            td > span.status-badge { width: auto; padding: 8px 16px; font-size: 12px; }
-            tr:last-child { display: none; } 
+            #menu-table, #menu-table thead, #menu-table tbody, #menu-table th, #menu-table td, #menu-table tr { display: block; width: 100%; }
+            #menu-table thead tr { display: none; } 
+            #menu-table tr { background: var(--white); margin-bottom: 15px; border-radius: 16px; padding: 15px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color); }
+            #menu-table td { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border: none !important; border-bottom: 1px dashed var(--border-color) !important; text-align: right; white-space: normal !important;}
+            #menu-table td:last-child { border-bottom: none !important; padding-bottom: 0;}
+            #menu-table td:first-child { display: none; } 
+            #menu-table td::before { content: attr(data-label); font-weight: 700; color: var(--text-muted); font-size: 13px; width: 35%; flex-shrink: 0; text-align: left;}
+            #menu-table td > select, #menu-table td > input, #menu-table td > span { width: 65%; font-size: 14px;}
+            #menu-table td > span.status-badge { width: auto; padding: 8px 16px; font-size: 12px; }
+            #menu-table tr:last-child { display: none; } 
 
             .desktop-actions { display: none; } 
             
@@ -261,39 +269,6 @@
 
         @media (max-width: 480px) {
             .summary-grid, .db-summary-grid, .report-summary { grid-template-columns: 1fr 1fr; }
-        }
-
-        /* --- PRINT STYLES --- */
-        #surat-tamu-container { display: none; }
-        @media print {
-            body { background: var(--white); color: #000; padding: 0; margin: 0; overflow: visible;}
-            .header, .header-actions, .mobile-bottom-bar, .desktop-actions, .scenario-tabs, .scenario-controls, .banner-container, .btn-sc-action, #dashboard-view, .modal-overlay {
-                display: none !important;
-            }
-            .container { max-width: 100%; margin: 0; padding: 0; box-shadow: none; }
-            body.print-surat-tamu .card, body.print-surat-tamu .top-grid, body.print-surat-tamu .table-card { display: none !important; }
-            body.print-surat-tamu #surat-tamu-container { display: block !important; padding: 40px; font-size: 14px; line-height: 1.6; }
-            .kop-surat { text-align: center; border-bottom: 3px solid var(--dark-blue); padding-bottom: 20px; margin-bottom: 30px; }
-            .kop-surat h1 { color: var(--primary-blue); font-size: 28px; letter-spacing: 2px; margin-bottom: 5px;}
-            .kop-surat p { font-size: 12px; color: #555; }
-            .surat-header { margin-bottom: 30px; }
-            .surat-header .tanggal-surat { text-align: right; margin-bottom: 20px;}
-            .surat-header .tujuan { font-weight: 600; }
-            .surat-body { margin-bottom: 30px; }
-            .surat-body table { width: 100%; margin: 20px 0; border: none; min-width: auto; display:table;}
-            .surat-body table tr { display: table-row; box-shadow: none; border:none; padding:0; margin:0;}
-            .surat-body table td { display: table-cell; padding: 8px 0; border: none; vertical-align: top;}
-            .surat-body table td::before { display: none; }
-            .surat-body table td:first-child { width: 30%; font-weight: 600; display: table-cell;}
-            .menu-list-container { margin-top: 30px; border: 1px solid #ccc; border-radius: 8px; padding: 20px; page-break-inside: avoid;}
-            .menu-list-container h3 { margin-bottom: 15px; color: var(--dark-blue); border-bottom: 1px solid #eee; padding-bottom: 10px;}
-            .menu-item { margin-bottom: 10px; display: flex;}
-            .menu-item .cat { width: 30%; font-weight: 600; }
-            .menu-item .items { width: 70%; }
-            .surat-footer { margin-top: 50px; page-break-inside: avoid; }
-            .ttd-box { width: 250px; text-align: left; margin-top: 30px; }
-            .ttd-box .nama { margin-top: 80px; font-weight: 700; text-decoration: underline;}
-            @page { margin: 1cm; }
         }
 
         /* Loading Spinner */
@@ -318,7 +293,6 @@
     <div class="header">
         <div class="header-left">
             <div class="logo-box">
-                <!-- LOGO SAJA (Teks Platinum Dihapus) -->
                 <img src="logo.png" alt="Platinum Hotel Logo" onerror="this.style.display='none';">
             </div>
             <div class="header-title">
@@ -329,7 +303,6 @@
         <div class="header-actions">
             <button class="btn-solid-white" onclick="tambahSkenario()">+ New Simulation</button>
             <button class="btn-outline" onclick="openReportModal()">📑 Reports</button>
-            <button class="btn-outline" onclick="cetakSuratTamu()">PDF to Guest</button>
         </div>
     </div>
 
@@ -593,9 +566,8 @@
                 <!-- Desktop Actions -->
                 <div class="desktop-actions">
                     <button class="btn-red" onclick="resetMenus()">⟲ Reset Selection</button>
-                    <button class="btn-light-blue" onclick="cetakStandard()">🖨 Print View</button>
-                    <!-- Minta user ke Dashboard agar satu Event (termasuk multi skenario) tersimpan -->
-                    <button class="btn-primary" onclick="alert('Menu saved locally. Please open 📊 Dashboard Event to review and save the whole event to Supabase.')">💾 Save This Scenario</button>
+                    <!-- BUTTON SAVE LANGSUNG KE SUPABASE, BUTTON PRINT VIEW DIHAPUS -->
+                    <button class="btn-primary" onclick="simpanTransaksi()">💾 Save to Supabase</button>
                 </div>
             </div>
         </div>
@@ -603,49 +575,7 @@
         <!-- Sticky Bottom Bar for MOBILE ONLY -->
         <div class="mobile-bottom-bar">
             <button class="btn-mobile-secondary" onclick="openReportModal()">📑 Reports</button>
-            <button class="btn-mobile-secondary" onclick="cetakSuratTamu()">PDF to Guest</button>
             <button class="btn-mobile-primary" onclick="simpanTransaksi()">💾 Save Event</button>
-        </div>
-
-        <!-- Surat Tamu Container (Hidden by default, shown only on print) -->
-        <div id="surat-tamu-container">
-            <div class="kop-surat">
-                <h1>PLATINUM HOTEL & CONVENTION HALL</h1>
-                <p>Jl. Soekarno Hatta No. 28, Balikpapan, East Kalimantan 76125 | Tel: (0542) 8800288</p>
-            </div>
-
-            <div class="surat-header">
-                <div class="tanggal-surat" id="surat-date">Balikpapan, October 14, 2026</div>
-                <p>To,</p>
-                <p class="tujuan" id="surat-booker">Mr/Mrs [Guest Name]</p>
-                <p id="surat-address">[Guest Address]</p>
-            </div>
-
-            <div class="surat-body">
-                <p>Dear Sir/Madam,</p>
-                <p>Thank you for trusting Platinum Hotel & Convention Hall Balikpapan as your event venue. Below are the details of the Banquet Package and the agreed menu selection:</p>
-
-                <table style="width:100%; border:none; margin: 20px 0;">
-                    <tr><td style="width:30%; font-weight:bold; border:none; padding:8px 0;">Event Name</td><td style="border:none;">: <span id="surat-ev-name">-</span></td></tr>
-                    <tr><td style="width:30%; font-weight:bold; border:none; padding:8px 0;">Event Date</td><td style="border:none;">: <span id="surat-ev-date">-</span></td></tr>
-                    <tr><td style="width:30%; font-weight:bold; border:none; padding:8px 0;">Venue (Room)</td><td style="border:none;">: <span id="surat-ev-venue">-</span></td></tr>
-                </table>
-
-                <div class="menu-list-container" id="surat-menu-list">
-                    <!-- Menu items injected here -->
-                </div>
-            </div>
-
-            <div class="surat-footer">
-                <p>This concludes the details of your package. Should you have any adjustments or further questions, please do not hesitate to contact us.</p>
-                
-                <div class="ttd-box">
-                    <p>Sincerely,</p>
-                    <p class="nama" id="surat-sales">Sales Person</p>
-                    <p>Banquet Sales & Marketing</p>
-                    <p>Platinum Hotel Balikpapan</p>
-                </div>
-            </div>
         </div>
 
     </div>
@@ -669,7 +599,7 @@
             <div class="report-table-wrapper">
                 <table class="report-table">
                     <thead>
-                        <!-- KOLOM DIUBAH SESUAI PERMINTAAN USER: Date, Event Name, PIC/booker, Pax, Price, Revenue, Profit -->
+                        <!-- KOLOM REPORT URUT SESUAI PERMINTAAN USER -->
                         <tr>
                             <th>Date</th>
                             <th>Event Name</th>
@@ -688,7 +618,7 @@
 
             <div class="modal-actions" style="margin-bottom: 20px;">
                 <button class="btn-green" onclick="downloadExcel()">📥 Download Excel</button>
-                <button class="btn-light-blue" onclick="cetakStandard()">🖨 Print Report / PDF</button>
+                <!-- BUTTON PRINT REPORT DIHAPUS SESUAI INSTRUKSI -->
                 <button class="btn-primary" style="width:auto;" onclick="closeReportModal()">Close Report</button>
             </div>
         </div>
@@ -1204,12 +1134,12 @@
         document.getElementById('db-menu-engineering').innerHTML = meHtml;
     }
 
-    // --- INTEGRASI SUPABASE (LIVE ONLINE) ---
+    // --- INTEGRASI SUPABASE (ONLINE) ---
     async function simpanTransaksi() {
         const evName = document.getElementById('ev-name').value;
         const evBooker = document.getElementById('ev-booker').value;
         
-        // VALIDASI: Cegah penyimpanan kosong (Unnamed Event) ke Supabase
+        // VALIDASI: Cegah penyimpanan kosong ke Supabase
         if (!evName || !evBooker) {
             alert("Harap lengkapi pengisian 'Group / Event Name' dan 'PIC / Booker' terlebih dahulu sebelum menyimpan event ke server!");
             return;
@@ -1260,13 +1190,12 @@
             profit: eventProfit
         };
 
+        // PUSH KE ONLINE SUPABASE
         if (dbClient) {
             document.getElementById('loader').style.display = 'flex';
             
             try {
-                // PUSH KE ONLINE SUPABASE
                 const { data, error } = await dbClient.from('transactions').insert([newData]);
-                
                 document.getElementById('loader').style.display = 'none';
 
                 if (error) {
@@ -1277,10 +1206,9 @@
             } catch (err) {
                 document.getElementById('loader').style.display = 'none';
                 alert('Gagal menyimpan ke Database Online: ' + err.message);
-                console.error("Supabase Error:", err);
             }
         } else {
-            alert(`Sistem Database Belum Terkoneksi. Mohon cek URL dan API Key Supabase Anda.`);
+            alert(`Sistem Database Belum Terkoneksi.`);
         }
     }
 
@@ -1288,14 +1216,9 @@
     async function fetchReportsFromSupabase() {
         if(dbClient) {
             try {
-                // Ambil semua transaksi secara Online dari tabel Supabase
                 const { data, error } = await dbClient.from('transactions').select('*').order('created_at', { ascending: false });
-                
                 if (error) throw error;
-                
-                if(data) {
-                    transactionHistory = data; 
-                }
+                if(data) { transactionHistory = data; }
             } catch (err) {
                 console.error("Gagal menarik data dari server online:", err.message);
             }
@@ -1361,7 +1284,7 @@
         }
 
         let csvContent = "data:text/csv;charset=utf-8,";
-        // Header CSV diubah sesuai kolom Report baru
+        // Header CSV
         csvContent += "Event Date,Event Name,PIC / Booker,Total Pax,Avg Price,Total Revenue,Total Profit\n";
 
         for(let i=0; i<transactionHistory.length; i++) {
@@ -1388,64 +1311,6 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    }
-
-    // --- PRINT / PDF ---
-    function cetakStandard() {
-        document.body.classList.remove('print-surat-tamu');
-        window.print();
-    }
-
-    function cetakSuratTamu() {
-        document.getElementById('surat-booker').innerText = document.getElementById('ev-booker').value || 'Sir/Madam';
-        document.getElementById('surat-address').innerText = document.getElementById('ev-address').value || '';
-        document.getElementById('surat-ev-name').innerText = document.getElementById('ev-name').value || '-';
-        document.getElementById('surat-ev-venue').innerText = document.getElementById('ev-venue').value || '-';
-        document.getElementById('surat-sales').innerText = document.getElementById('ev-sales').value || 'Sales';
-        
-        let dVal = document.getElementById('ev-date').value;
-        document.getElementById('surat-ev-date').innerText = dVal ? new Date(dVal).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
-        document.getElementById('surat-date').innerText = `Balikpapan, ${new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}`;
-
-        let menuHTML = '';
-        let grandRev = 0;
-        
-        for(let i=0; i<scenarios.length; i++) {
-            let sc = scenarios[i];
-            grandRev += sc.revenue;
-            
-            menuHTML += `<div style="margin-top:15px; page-break-inside: avoid;">`;
-            menuHTML += `<h4 style="color:var(--dark-blue); margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">${sc.name} (${sc.mode === 'buffet' ? 'Buffet' : 'Coffee Break'}) - ${sc.pax} Pax @ ${formatRp(sc.sellingPrice)}</h4>`;
-            
-            let hasMenu = false;
-            if(sc.selections) {
-                for (const [cat, items] of Object.entries(sc.selections)) {
-                    let validItems = items.filter(i => i !== "" && i !== "—");
-                    if(validItems.length > 0) {
-                        menuHTML += `
-                            <div class="menu-item">
-                                <div class="cat">${cat}</div>
-                                <div class="items">: ${validItems.join(', ')}</div>
-                            </div>
-                        `;
-                        hasMenu = true;
-                    }
-                }
-            }
-            if(!hasMenu) menuHTML += `<i>(No menu selected for this scenario)</i>`;
-            menuHTML += `</div>`;
-        }
-
-        menuHTML += `<div style="margin-top:25px; padding-top:15px; border-top:2px dashed #ccc; font-weight:bold; font-size:16px; text-align:right;">Total Estimated Package Price: ${formatRp(grandRev)}</div>`;
-
-        document.getElementById('surat-menu-list').innerHTML = menuHTML;
-
-        document.body.classList.add('print-surat-tamu');
-        
-        setTimeout(() => {
-            window.print();
-            document.body.classList.remove('print-surat-tamu');
-        }, 300);
     }
 
     // INIT
