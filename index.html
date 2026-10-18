@@ -128,7 +128,7 @@
         .stat-capsule span { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; font-weight: 600;}
         .stat-capsule strong { display: block; font-size: 16px; color: var(--dark-blue); font-weight: 800;}
 
-        /* --- RESPONSIVE TABLE APP STYLE --- */
+        /* --- TABLE STYLE --- */
         .table-card { background: var(--white); border-radius: 20px; box-shadow: var(--card-shadow); padding: 20px; }
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; table-layout: fixed; min-width: 900px;}
@@ -146,12 +146,12 @@
         td:nth-child(1) { text-align: center; font-weight: 700;}
         .col-qty input { width: 100%; padding: 10px; text-align: center; border: 1.5px solid var(--border-color); border-radius: 8px; background:#f8fafc; font-weight:800; font-size: 14px;}
         
+        /* Dropdown - Rata Kiri & Tanpa Panah Sesuai Permintaan */
         .menu-select { 
             width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); 
             border-radius: 10px; font-size: 13px; color: var(--text-dark);
             background: #fff; cursor: pointer; font-weight: 600; appearance: none;
-            text-align: left; /* Rata Kiri sesuai instruksi */
-            /* Menghilangkan panah bawaan sesuai instruksi, tapi di mobile webview kadang masih terlihat */
+            text-align: left;
         }
         .menu-select:focus { border-color: var(--secondary-blue); box-shadow: 0 0 0 3px rgba(0,150,199,0.1); outline: none;}
         .menu-select:disabled { background: #f1f5f9; color: #94a3b8; border-color: transparent; text-align: left; opacity: 0.7;}
@@ -175,8 +175,8 @@
         
         .db-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;}
         .db-card { background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px);}
-        .db-card span { font-size: 12px; font-weight: 600; opacity: 0.9; margin-bottom: 5px; display: block;}
-        .db-card strong { font-size: 24px; font-weight: 800;}
+        .db-card span { font-size: 13px; font-weight: 600; opacity: 0.9; margin-bottom: 5px; display: block;}
+        .db-card strong { font-size: 26px; font-weight: 800;}
         .db-table-wrapper { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: var(--card-shadow); margin-bottom:25px;}
 
         /* --- MOBILE STYLES --- */
@@ -216,6 +216,7 @@
         @media (max-width: 1024px) {
             .top-grid { grid-template-columns: 1fr; }
             .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: repeat(3, 1fr); }
+            .db-event-info { flex-direction: column; gap: 10px; }
         }
 
         @media (max-width: 768px) {
@@ -319,7 +320,7 @@
         <div class="header-left">
             <div class="logo-box">
                 <img src="logo.png" alt="Platinum Hotel Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <div class="logo-text-wrapper" style="display:none; text-align:left;">
+                <div class="logo-text-wrapper" style="text-align:left;">
                     PLATINUM <small>HOTEL & CONVENTION HALL<br>BALIKPAPAN</small>
                 </div>
             </div>
@@ -459,7 +460,7 @@
             </div>
 
             <div class="desktop-actions" style="justify-content: center; margin-bottom:20px;">
-                <button class="btn-primary" style="width: 100%; max-width: 400px; padding:18px; font-size:16px;" onclick="simpanTransaksiToSupabase()">💾 Save Event Transaction</button>
+                <button class="btn-primary" style="width: 100%; max-width: 400px; padding:18px; font-size:16px;" onclick="simpanTransaksi()">💾 Save Event Transaction</button>
             </div>
         </div>
 
@@ -587,14 +588,15 @@
                 <!-- Dynamic Banner -->
                 <div class="banner-container banner-warning" id="menu-completion-banner">
                     COMPLETE THE MENU
-                    <small>Category status is checked based on the number of Menu choices compared to Qty.</small>
+                    <small>Category status is checked based on the number of Menu choices compared to Qty. Category with Qty 0 does not need to be filled.</small>
                 </div>
 
                 <!-- Desktop Actions -->
                 <div class="desktop-actions">
                     <button class="btn-red" onclick="resetMenus()">⟲ Reset Selection</button>
                     <button class="btn-light-blue" onclick="cetakStandard()">🖨 Print View</button>
-                    <button class="btn-primary" onclick="alert('Menu saved locally. Open Dashboard Event to review and save the whole event.')">💾 Save This Scenario</button>
+                    <!-- Minta user ke Dashboard agar satu Event (termasuk multi skenario) tersimpan -->
+                    <button class="btn-primary" onclick="alert('Menu saved locally. Please open 📊 Dashboard Event to review and save the whole event.')">💾 Save This Scenario</button>
                 </div>
             </div>
         </div>
@@ -603,7 +605,7 @@
         <div class="mobile-bottom-bar">
             <button class="btn-mobile-secondary" onclick="openReportModal()">📑 Reports</button>
             <button class="btn-mobile-secondary" onclick="cetakSuratTamu()">PDF to Guest</button>
-            <button class="btn-mobile-primary" onclick="simpanTransaksiToSupabase()">💾 Save Event</button>
+            <button class="btn-mobile-primary" onclick="simpanTransaksi()">💾 Save Event</button>
         </div>
 
         <!-- Surat Tamu Container (Hidden by default, shown only on print) -->
@@ -1210,7 +1212,7 @@
     }
 
     // --- INTEGRASI SUPABASE ---
-    async function simpanTransaksiToSupabase() {
+    async function simpanTransaksi() {
         const evName = document.getElementById('ev-name').value || 'Unnamed Event';
         const evBooker = document.getElementById('ev-booker').value || '-';
         const evWa = document.getElementById('ev-wa').value || '-';
@@ -1310,16 +1312,16 @@
             
             tbody.innerHTML += `
                 <tr>
-                    <td>${trx.event_date || trx.date}</td>
-                    <td style="font-weight:700;">${trx.name}</td>
-                    <td>${trx.booker}</td>
-                    <td>${trx.wa}</td>
-                    <td>${trx.beo}</td>
-                    <td>${trx.segment}</td>
-                    <td><span style="background:#e2e8f0; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:700;">${trx.status}</span></td>
-                    <td>${trx.sales}</td>
-                    <td>${trx.venue}</td>
-                    <td>${trx.pax}</td>
+                    <td>${trx.event_date || trx.date || '-'}</td>
+                    <td style="font-weight:700;">${trx.name || '-'}</td>
+                    <td>${trx.booker || '-'}</td>
+                    <td>${trx.wa || '-'}</td>
+                    <td>${trx.beo || '-'}</td>
+                    <td>${trx.segment || '-'}</td>
+                    <td><span style="background:#e2e8f0; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:700;">${trx.status || '-'}</span></td>
+                    <td>${trx.sales || '-'}</td>
+                    <td>${trx.venue || '-'}</td>
+                    <td>${trx.pax || 0}</td>
                     <td>${formatRp(trx.revenue || 0)}</td>
                     <td>${formatRp(trx.cost || 0)}</td>
                     <td>${(trx.cost_pct || trx.costPct || 0).toFixed(1)}%</td>
