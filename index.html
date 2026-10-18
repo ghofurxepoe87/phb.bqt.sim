@@ -45,10 +45,12 @@
         }
         .header-left { display: flex; align-items: center; gap: 20px; }
         .logo-box {
-            background: var(--white); padding: 10px; border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
+            background: var(--white); padding: 10px 15px; border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 8px;
+            color: var(--primary-blue); font-weight: 800; font-size: 16px; letter-spacing: 1px;
         }
-        .logo-box img { max-height: 50px; width: auto;} 
+        .logo-box img { max-height: 40px; width: auto;} 
+        .logo-text-wrapper small { display: block; font-size: 8px; font-weight: 600; letter-spacing: 0; color: var(--text-dark); margin-top:2px;}
         
         .header-title h1 { font-size: 20px; margin-bottom: 4px; font-weight: 700; }
         .header-title p { font-size: 12px; font-weight: 500; opacity: 0.9; }
@@ -144,15 +146,15 @@
         td:nth-child(1) { text-align: center; font-weight: 700;}
         .col-qty input { width: 100%; padding: 10px; text-align: center; border: 1.5px solid var(--border-color); border-radius: 8px; background:#f8fafc; font-weight:800; font-size: 14px;}
         
-        /* Dropdown - Panah Dihilangkan sesuai instruksi */
         .menu-select { 
             width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color); 
             border-radius: 10px; font-size: 13px; color: var(--text-dark);
             background: #fff; cursor: pointer; font-weight: 600; appearance: none;
-            text-align: center; text-align-last: center; /* Center text visually */
+            text-align: left; /* Rata Kiri sesuai instruksi */
+            /* Menghilangkan panah bawaan sesuai instruksi, tapi di mobile webview kadang masih terlihat */
         }
         .menu-select:focus { border-color: var(--secondary-blue); box-shadow: 0 0 0 3px rgba(0,150,199,0.1); outline: none;}
-        .menu-select:disabled { background: #f1f5f9; color: #94a3b8; border-color: transparent;}
+        .menu-select:disabled { background: #f1f5f9; color: #94a3b8; border-color: transparent; text-align: left; opacity: 0.7;}
 
         .status-badge { padding: 8px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; text-align: center; display: block; width: 100%;}
         .badge-sesuai { background: #d1fae5; color: #047857; }
@@ -167,13 +169,14 @@
         #dashboard-view { display: none; }
         .db-header { background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue)); color: white; padding: 30px; border-radius: 20px; margin-bottom: 25px; box-shadow: var(--card-shadow);}
         .db-header h2 { font-size: 24px; margin-bottom: 15px; font-weight: 800;}
-        .db-event-info { display: flex; gap: 30px; background: rgba(0,0,0,0.15); padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; flex-wrap: wrap;}
-        .db-event-info div { font-size: 13px; font-weight: 500;}
-        .db-event-info strong { display: block; font-size: 15px; font-weight: 700; margin-top: 3px; color: #fff;}
+        .db-event-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 20px; margin-bottom: 20px;}
+        .db-event-info div span { font-size: 12px; font-weight: 600; opacity: 0.8; display: block; margin-bottom: 5px;}
+        .db-event-info div strong { font-size: 15px; font-weight: 700; color: #fff; display: block;}
+        
         .db-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;}
         .db-card { background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px);}
-        .db-card span { font-size: 13px; font-weight: 600; opacity: 0.9; margin-bottom: 5px; display: block;}
-        .db-card strong { font-size: 26px; font-weight: 800;}
+        .db-card span { font-size: 12px; font-weight: 600; opacity: 0.9; margin-bottom: 5px; display: block;}
+        .db-card strong { font-size: 24px; font-weight: 800;}
         .db-table-wrapper { background: var(--white); border-radius: 20px; padding: 25px; box-shadow: var(--card-shadow); margin-bottom:25px;}
 
         /* --- MOBILE STYLES --- */
@@ -200,10 +203,12 @@
         
         .report-table-wrapper { background: var(--white); border-radius: 16px; overflow-x: auto; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .report-table { width: 100%; text-align: left; border-collapse: collapse; font-size: 13px; min-width: 1600px; }
-        .report-table th { background: #e2e8f0; padding: 16px; font-weight: 800; color: var(--dark-blue); }
-        .report-table td { padding: 16px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+        .report-table th { background: #e2e8f0; padding: 15px; font-weight: 800; color: var(--dark-blue); border-right: 1px solid #cbd5e1;}
+        .report-table td { padding: 15px; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); font-weight: 500; }
+        
         .modal-actions { display: flex; justify-content: flex-end; gap: 15px; flex-wrap: wrap; }
         .btn-green { background: #10b981; color: white; border: none; padding: 14px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 14px;}
+        .btn-green:hover { background: #059669; }
 
         /* =========================================
            MOBILE APP RESPONSIVE STYLES
@@ -211,7 +216,6 @@
         @media (max-width: 1024px) {
             .top-grid { grid-template-columns: 1fr; }
             .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: repeat(3, 1fr); }
-            .db-event-info { flex-direction: column; gap: 10px; }
         }
 
         @media (max-width: 768px) {
@@ -223,15 +227,16 @@
             .form-grid-2, .form-grid-3, .cp-row { grid-template-columns: 1fr; gap: 15px; }
             .summary-grid, .report-summary, .db-summary-grid { grid-template-columns: 1fr 1fr; }
             .card { padding: 20px; border-radius: 16px; }
+            .db-event-info { grid-template-columns: 1fr; gap: 10px; }
             
             .table-card { padding: 15px; background: transparent; box-shadow: none;}
             table, thead, tbody, th, td, tr { display: block; width: 100%; }
             thead tr { display: none; } 
             tr { background: var(--white); margin-bottom: 15px; border-radius: 16px; padding: 15px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color); }
-            td { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border: none !important; border-bottom: 1px dashed var(--border-color) !important; }
+            td { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border: none !important; border-bottom: 1px dashed var(--border-color) !important; text-align: right;}
             td:last-child { border-bottom: none !important; padding-bottom: 0;}
             td:first-child { display: none; } 
-            td::before { content: attr(data-label); font-weight: 700; color: var(--text-muted); font-size: 13px; width: 35%; flex-shrink: 0; }
+            td::before { content: attr(data-label); font-weight: 700; color: var(--text-muted); font-size: 13px; width: 35%; flex-shrink: 0; text-align: left;}
             td > select, td > input, td > span { width: 65%; font-size: 14px;}
             td > span.status-badge { width: auto; padding: 8px 16px; font-size: 12px; }
             tr:last-child { display: none; } 
@@ -255,7 +260,7 @@
         }
 
         @media (max-width: 480px) {
-            .summary-grid, .db-summary-grid { grid-template-columns: 1fr 1fr; }
+            .summary-grid, .db-summary-grid, .report-summary { grid-template-columns: 1fr 1fr; }
         }
 
         /* --- PRINT STYLES --- */
@@ -314,7 +319,9 @@
         <div class="header-left">
             <div class="logo-box">
                 <img src="logo.png" alt="Platinum Hotel Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <span style="display:none;">PLATINUM</span>
+                <div class="logo-text-wrapper" style="display:none; text-align:left;">
+                    PLATINUM <small>HOTEL & CONVENTION HALL<br>BALIKPAPAN</small>
+                </div>
             </div>
             <div class="header-title">
                 <h1>Banquet Package Simulator</h1>
@@ -425,15 +432,15 @@
             
             <div class="db-table-wrapper" style="overflow-x:auto;">
                 <div class="card-title">Details per Scenario</div>
-                <table class="report-table" style="min-width: 600px;">
+                <table style="width:100%; border-collapse: collapse; text-align:left; font-size:14px; min-width: 600px;">
                     <thead>
-                        <tr>
-                            <th>Scenario</th>
-                            <th>Package</th>
-                            <th>Pax</th>
-                            <th>Price/Pax</th>
-                            <th>Revenue</th>
-                            <th>Profit</th>
+                        <tr style="border-bottom: 2px solid #e2e8f0; color:#64748b;">
+                            <th style="padding:15px;">Scenario</th>
+                            <th style="padding:15px;">Package</th>
+                            <th style="padding:15px;">Pax</th>
+                            <th style="padding:15px;">Price/Pax</th>
+                            <th style="padding:15px;">Revenue</th>
+                            <th style="padding:15px;">Profit</th>
                         </tr>
                     </thead>
                     <tbody id="db-table-body">
@@ -580,14 +587,14 @@
                 <!-- Dynamic Banner -->
                 <div class="banner-container banner-warning" id="menu-completion-banner">
                     COMPLETE THE MENU
-                    <small>Category status is checked based on the number of Menu choices compared to Qty. Category with Qty 0 does not need to be filled.</small>
+                    <small>Category status is checked based on the number of Menu choices compared to Qty.</small>
                 </div>
 
                 <!-- Desktop Actions -->
                 <div class="desktop-actions">
                     <button class="btn-red" onclick="resetMenus()">⟲ Reset Selection</button>
                     <button class="btn-light-blue" onclick="cetakStandard()">🖨 Print View</button>
-                    <button class="btn-primary" onclick="alert('Menu saved locally. Check Dashboard Event to see recap.')">💾 Save This Scenario</button>
+                    <button class="btn-primary" onclick="alert('Menu saved locally. Open Dashboard Event to review and save the whole event.')">💾 Save This Scenario</button>
                 </div>
             </div>
         </div>
@@ -1134,7 +1141,6 @@
 
     // --- DASHBOARD EVENT ---
     function renderDashboard() {
-        // Tampilkan Detail Info Event di Atas
         const evName = document.getElementById('ev-name').value || '-';
         const evBooker = document.getElementById('ev-booker').value || '-';
         const evDate = document.getElementById('ev-date').value;
@@ -1331,7 +1337,7 @@
         document.getElementById('rep-total-profit').innerText = formatRp(tProfit);
     }
 
-    // --- DOWNLOAD CSV (EXCEL) ---
+    // --- DOWNLOAD EXCEL (CSV) ---
     function downloadExcel() {
         if(transactionHistory.length === 0) {
             alert("No data available to download.");
@@ -1339,18 +1345,10 @@
         }
 
         let csvContent = "data:text/csv;charset=utf-8,";
-        
-        // Headers
         csvContent += "Event Date,Event Name,Booker,WhatsApp,BEO,Segment,Status,Sales Person,Venue,Total Pax,Total Revenue,Total Cost,Cost %,Total Profit\n";
 
-        // Rows
         for(let i=0; i<transactionHistory.length; i++) {
             let trx = transactionHistory[i];
-            
-            // Format numbers nicely without Rp prefix so Excel can read them as numbers
-            let rev = trx.revenue || 0;
-            let cost = trx.cost || 0;
-            let profit = trx.profit || 0;
             let cpct = (trx.cost_pct || trx.costPct || 0).toFixed(1) + "%";
 
             let rowArray = [
@@ -1364,21 +1362,20 @@
                 `"${trx.sales || ''}"`,
                 `"${trx.venue || ''}"`,
                 trx.pax || 0,
-                rev,
-                cost,
+                trx.revenue || 0,
+                trx.cost || 0,
                 `"${cpct}"`,
-                profit
+                trx.profit || 0
             ];
 
             csvContent += rowArray.join(",") + "\n";
         }
 
-        // Trigger Download
         var encodedUri = encodeURI(csvContent);
         var link = document.createElement("a");
         link.setAttribute("href", encodedUri);
         link.setAttribute("download", "Platinum_Banquet_Report.csv");
-        document.body.appendChild(link); // Required for FF
+        document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
