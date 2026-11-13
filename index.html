@@ -117,6 +117,7 @@
         .scenario-controls button { flex: 1; }
         .btn-primary { background: var(--secondary-blue); color: white; border: none; padding: 14px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,150,199,0.2);}
         .btn-danger-outline { background: transparent; color: #ef4444; border: 1.5px solid #fca5a5; padding: 14px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer;}
+        .btn-red { background: #ef4444; color: white; border: none; padding: 14px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 14px;}
         
         /* --- CONTROL PANEL & SUMMARY --- */
         .card-title { font-size: 18px; font-weight: 800; color: var(--dark-blue); margin-bottom: 20px; }
@@ -260,7 +261,6 @@
             #menu-table td:first-child { display: none; } 
             #menu-table td::before { content: attr(data-label); font-weight: 700; color: var(--text-muted); font-size: 13px; width: 30%; flex-shrink: 0; text-align: left;}
             
-            /* FIX UNTUK SELECT MENU DI MOBILE AGAR TIDAK LEBAR / TERGENCET */
             #menu-table td > select, #menu-table td > input, #menu-table td > span { width: 70%; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
             #menu-table td > span.status-badge { width: auto; padding: 8px 16px; font-size: 11px; }
             #menu-table tr:last-child { display: none; } 
@@ -441,7 +441,7 @@
                 </table>
             </div>
 
-            <!-- MENU ENGINEERING FEATURE DI TAMPILAN DASHBOARD -->
+            <!-- MENU ENGINEERING FEATURE -->
             <div class="db-table-wrapper" style="margin-top: 20px;">
                 <div class="card-title">🧑‍🍳 Menu Engineering (Kitchen Recap)</div>
                 <p style="font-size:12px; color:var(--text-muted); margin-bottom: 20px; font-weight:500;">Combined menu list from all scenarios and total pax required for the operational team (Chef).</p>
@@ -692,6 +692,7 @@
         cb: {
             "SAVORY": ["Bakpao Ayam", "Bakpao Kacang Merah", "Bakpao Kacang Tanah", "Bola Udang Keju", "Cakue Udang Goreng", "Chicken & Mushroom Puff", "Chicken Croquet", "Chicken Siomay", "Chicken Spring Roll", "Chicken Sushi Roll", "Chicken nugget", "Duck Spring Roll", "Kumis Naga", "Lemper Ayam", "Lumpia Udang Goreng Kulit Tahu", "Martabak Telur", "Money Bag", "Okado", "Onde Onde", "Pastel", "Perkedel kentang keju", "Quiche lorents", "Risoles Mayo", "Roti Abon", "Roti sosis", "Samosa Vegetable", "Semarang Spring Roll", "Siomay Ayam", "Siomay Udang", "Sosis Solo", "Steamed Siomay", "Tahu Goreng Tepung", "Tahu Isi", "Tahu Walek", "Tempe Mendoan", "Thai Chicken Spring Roll", "Tim Kaki Ayam", "Tim Lumpia Kulit Tahu", "Tim Tahu Udang", "Vegetable Spring Roll", "Vietname Spring Roll", "Wonton Goreng", "Wotie", "Wotiek", "Xiao Long Pao", "semar mendem", "sosis puff"], 
             "SWEET": ["Almond Cake", "Amparan Tatak", "Apple Pie", "Apple Strudel", "Banana Cake", "Bika Ambon", "Brownies", "Cantik Manis", "Chocolate Pie", "Dadar Gulung", "Fruit Tartlet", "Getuk Lindri", "Ketan Abon", "Ketan Srikaya", "Klepon", "Klepon Cake", "Kue Ku", "Kue Kucur", "Kue Lapis Beras", "Lapis Surabaya", "Lumpur Surga", "Marble cake", "Mille Fiule", "Mini Black Forest", "Mini Cheese Cake", "Misro", "Nagasari", "Onde2", "Pandan Srikaya", "Pie Buah", "Pineapple Strudel", "Pisang Goreng", "Pukis", "Putri Selat", "Putu Ayu", "Red Velvet", "Roti Pisang", "Sarang Semut", "Sifone Cake", "Strawberry Cheese Cake", "Strawberry Pie", "Sus Buah", "Sus Vla", "Talam Pandan", "Talam Ubi", "Wajik Ketan"], 
+            "FRUIT SLICED": ["Assorted Slice Fruits", "Watermelon & Melon", "Papaya & Pineapple", "Tropical Fruit Platter"],
             "CHIIPS": ["Amplang", "Beng beng", "Kacang Atom", "Kacang Bawang", "Kacang Kapri", "Kacang Telor", "Keripik Pisang", "Keripik Singkong", "Keripik Tempe", "Keripik Ubi", "Pop Corn", "Stick Balado", "Wafer", "kacang koro", "keripik pisang", "keripik tortilla", "super star"], 
             "STALL": ["Batagor", "Chicken Wrap", "Crepes suzette", "Dadar Gulung", "Empek - Empek", "Kue lumpur", "Martabak Asin", "Martabak Manis", "Pukis", "Serabi", "Tempura", "Tempura vegetables"], 
             "JUICES": ["Guava", "Mango", "Orange"], 
@@ -713,12 +714,14 @@
     }
 
     function getCBRules(alloc) {
-        if(alloc >= 140000) return { tier: 'T1', round: 150000, min: 140000, max: 999999, qty: { SAVORY:3, SWEET:2, CHIIPS:1, STALL:1, JUICES:1, TEA:1, COFFEE:1, 'COFFEE CUP':1, 'OTHER HOT DRINK':1 } };
-        if(alloc >= 115000) return { tier: 'T2', round: 125000, min: 115000, max: 139999, qty: { SAVORY:2, SWEET:2, CHIIPS:1, STALL:1, JUICES:1, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
-        if(alloc >= 90000) return { tier: 'T3', round: 100000, min: 90000, max: 114999, qty: { SAVORY:2, SWEET:2, CHIIPS:1, STALL:1, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
-        if(alloc >= 65000) return { tier: 'T4', round: 75000, min: 65000, max: 89999, qty: { SAVORY:2, SWEET:1, CHIIPS:1, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
-        if(alloc >= 50000) return { tier: 'T5', round: 50000, min: 50000, max: 64999, qty: { SAVORY:1, SWEET:1, CHIIPS:0, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
-        return { tier: 'T6', round: 35000, min: 0, max: 49999, qty: { SAVORY:0, SWEET:0, CHIIPS:0, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        // 85-100K: 2 savory, 2 sweet, 1 fruit sliced, 1 chips (+ Tea & Coffee)
+        if(alloc >= 85000) return { tier: 'T3', round: 100000, min: 85000, max: 999999, qty: { SAVORY:2, SWEET:2, 'FRUIT SLICED':1, CHIIPS:1, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        // 65K-80K: 2 savory, 1 sweet, 1 chips (+ Tea & Coffee)
+        if(alloc >= 65000) return { tier: 'T2', round: 75000, min: 65000, max: 84999, qty: { SAVORY:2, SWEET:1, 'FRUIT SLICED':0, CHIIPS:1, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        // 50-60K: 1 sweet, 1 savory (+ Tea & Coffee)
+        if(alloc >= 50000) return { tier: 'T1', round: 50000, min: 50000, max: 64999, qty: { SAVORY:1, SWEET:1, 'FRUIT SLICED':0, CHIIPS:0, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
+        // Below 50K fallback
+        return { tier: 'T0', round: 35000, min: 0, max: 49999, qty: { SAVORY:0, SWEET:0, 'FRUIT SLICED':0, CHIIPS:0, STALL:0, JUICES:0, TEA:1, COFFEE:1, 'COFFEE CUP':0, 'OTHER HOT DRINK':0 } };
     }
 
     const categoriesBuffet = [
@@ -729,9 +732,10 @@
     ];
 
     const categoriesCB = [
-        { id: 'SAVORY', cost: 5000 }, { id: 'SWEET', cost: 5000 }, { id: 'CHIIPS', cost: 3000 }, 
-        { id: 'STALL', cost: 5000 }, { id: 'JUICES', cost: 5000 }, { id: 'TEA', cost: 3000 }, 
-        { id: 'COFFEE', cost: 3000 }, { id: 'COFFEE CUP', cost: 8000 }, { id: 'OTHER HOT DRINK', cost: 5000 }
+        { id: 'SAVORY', cost: 5000 }, { id: 'SWEET', cost: 5000 }, { id: 'FRUIT SLICED', cost: 5000 }, 
+        { id: 'CHIIPS', cost: 3000 }, { id: 'STALL', cost: 5000 }, { id: 'JUICES', cost: 5000 }, 
+        { id: 'TEA', cost: 3000 }, { id: 'COFFEE', cost: 3000 }, { id: 'COFFEE CUP', cost: 8000 }, 
+        { id: 'OTHER HOT DRINK', cost: 5000 }
     ];
 
     // --- STATE MANAGEMENT ---
